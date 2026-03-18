@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus Commerce — Unified Commerce OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--off:#F7F8FA;--border:#E8EAED;--border2:#D1D5DB;
+  --text:#0F1117;--muted:#6B7280;--light:#9CA3AF;
+  --accent:#0057FF;--accent-dark:#0040CC;--accent-light:#EEF3FF;--accent2:#FF4D00;
+  --green:#00A878;--green-bg:#EDFAF5;
+  --yellow:#F59E0B;--yellow-bg:#FFFBEB;
+  --red:#EF4444;--red-bg:#FEF2F2;
+  --nav-h:68px;--r:8px;--r-lg:12px;--r-xl:16px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.1),0 4px 12px rgba(0,0,0,0.05);
+  /* Dashboard */
+  --db:#0B0D12;--ds:#13161E;--ds2:#1A1E28;--ds3:#222737;
+  --dborder:rgba(255,255,255,0.06);--dborder2:rgba(255,255,255,0.11);
+  --dt:#EEE9E0;--dm:#6B7080;
+  --da:#E8C547;--da2:#5B9CF6;
+  --dg:#3DD68C;--dr:#F76E6E;--do:#F7A94F;--dp:#A78BFA;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{cursor:pointer;font-family:inherit;}
+img{max-width:100%;display:block;}
+.page{display:none;}
+.page.active{display:block;}
+#page-dashboard.active{display:flex;height:100vh;overflow:hidden;background:var(--db);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;}
+.toast-item{background:var(--text);color:#fff;padding:0.75rem 1.25rem;border-radius:var(--r-lg);font-size:0.85rem;font-weight:500;box-shadow:var(--shadow-lg);animation:toastIn 0.3s ease;max-width:320px;}
+.toast-item.success{background:#166534;}
+.toast-item.error{background:#991B1B;}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* ══ NAV ══ */
+.nav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 2.5rem;gap:0;transition:box-shadow 0.2s;}
+.nav.scrolled{box-shadow:0 1px 12px rgba(0,0,0,0.08);}
+.nav-logo{display:flex;align-items:center;gap:0.6rem;cursor:pointer;}
+.nav-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.nav-name{font-size:1.2rem;font-weight:800;color:var(--text);letter-spacing:-0.5px;}
+.nav-name span{color:var(--accent);}
+.nav-links{display:flex;align-items:center;gap:0.15rem;margin:0 auto;list-style:none;}
+.nav-links li a{display:block;padding:0.5rem 0.9rem;font-size:0.875rem;font-weight:500;color:var(--muted);border-radius:var(--r);transition:all 0.15s;}
+.nav-links li a:hover{color:var(--text);background:var(--off);}
+.nav-links li a.active{color:var(--accent);font-weight:600;}
+.nav-links li a.new-badge::after{content:'New';background:var(--accent);color:#fff;font-size:0.58rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:100px;margin-left:0.4rem;vertical-align:middle;text-transform:uppercase;}
+.nav-actions{display:flex;align-items:center;gap:0.75rem;}
+.btn-nav-ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text);font-size:0.875rem;font-weight:600;padding:0.5rem 1.1rem;border-radius:var(--r);transition:all 0.15s;}
+.btn-nav-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-primary-nav{background:var(--accent);color:#fff;font-size:0.875rem;font-weight:700;padding:0.55rem 1.25rem;border-radius:var(--r);border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:0.4rem;}
+.btn-primary-nav:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,87,255,0.3);}
+
+/* ══ SHARED ══ */
+.container{max-width:1140px;margin:0 auto;padding:0 2rem;}
+.section{padding:5rem 0;}
+.section-sm{padding:3.5rem 0;}
+.sec-tag{display:inline-flex;align-items:center;gap:0.4rem;background:var(--accent-light);color:var(--accent);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:0.3rem 0.8rem;border-radius:100px;margin-bottom:1.25rem;}
+.sec-tag::before{content:'';width:5px;height:5px;background:var(--accent);border-radius:50%;}
+.headline{font-size:clamp(2.2rem,4.5vw,3.5rem);font-weight:800;letter-spacing:-1.5px;line-height:1.08;}
+.headline em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent);}
+.subhead{font-size:1.1rem;color:var(--muted);max-width:520px;line-height:1.75;margin-top:1.25rem;}
+.text-center{text-align:center;}
+.text-center .subhead{margin:1.25rem auto 0;}
+.divider{border:none;border-top:1px solid var(--border);margin:0;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:0.5rem;font-size:1rem;font-weight:700;padding:0.85rem 2rem;border-radius:var(--r);transition:all 0.18s;border:none;cursor:pointer;font-family:inherit;}
+.btn-blue{background:var(--accent);color:#fff;}
+.btn-blue:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,87,255,0.3);}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border2);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-white{background:#fff;color:var(--accent);}
+.btn-white:hover{background:var(--accent-light);}
+.btn-white-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.35);}
+.btn-white-outline:hover{border-color:rgba(255,255,255,0.7);}
+.btn-sm{font-size:0.875rem;padding:0.6rem 1.25rem;}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.75rem;box-shadow:var(--shadow);}
+.card-hover:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--border2);}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.65rem;border-radius:100px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+.b-green{background:var(--green-bg);color:var(--green);}
+.b-yellow{background:var(--yellow-bg);color:var(--yellow);}
+.b-red{background:var(--red-bg);color:var(--red);}
+.b-blue{background:var(--accent-light);color:var(--accent);}
+.b-gray{background:var(--off);color:var(--muted);}
+
+/* ══ HERO ══ */
+.hero{padding:6rem 0 5rem;background:linear-gradient(180deg,#F0F4FF 0%,#FFFFFF 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,87,255,0.06),transparent 70%);pointer-events:none;}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:0.5rem;background:#fff;border:1px solid var(--border);border-radius:100px;padding:0.35rem 0.9rem;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:1.5rem;box-shadow:var(--shadow);}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.75);}}
+.hero h1{font-size:clamp(2.5rem,5vw,3.8rem);font-weight:800;letter-spacing:-2px;line-height:1.06;margin-bottom:1.5rem;}
+.hero h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent);}
+.hero-sub{font-size:1.1rem;color:var(--muted);line-height:1.75;margin-bottom:2.25rem;max-width:480px;}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;}
+.social-proof{display:flex;align-items:center;gap:1rem;}
+.avatar-stack{display:flex;}
+.avatar-stack span{width:30px;height:30px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700;color:#fff;margin-left:-8px;}
+.avatar-stack span:first-child{margin-left:0;}
+.proof-text{font-size:0.8rem;color:var(--muted);line-height:1.4;}
+.proof-text strong{color:var(--text);}
+/* Hero card */
+.hero-visual{position:relative;}
+.hero-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;box-shadow:var(--shadow-lg);}
+.hero-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.hero-card-title{font-size:0.82rem;font-weight:700;}
+.hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1.25rem;}
+.hero-metric{background:var(--off);border-radius:var(--r);padding:0.85rem;}
+.hero-metric-val{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px;}
+.hero-metric-lbl{font-size:0.65rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;}
+.hero-metric-delta{font-size:0.7rem;font-weight:600;color:var(--green);margin-top:3px;}
+.hero-sparkline{display:flex;align-items:flex-end;gap:3px;height:52px;margin-bottom:1.25rem;}
+.spark-bar{flex:1;border-radius:3px 3px 0 0;}
+.float-badge{position:absolute;background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:0.75rem 1rem;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:0.6rem;font-size:0.8rem;font-weight:600;}
+.float-badge .fbi{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.float-1{top:-20px;right:-20px;}
+.float-2{bottom:30px;left:-30px;}
+.hero-order-row{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);font-size:0.78rem;}
+.hero-order-row:last-child{border-bottom:none;padding-bottom:0;}
+
+/* logos */
+.logos-strip{padding:2.5rem 0;border-bottom:1px solid var(--border);}
+.logos-lbl{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--light);text-align:center;margin-bottom:1.5rem;}
+.logos-row{display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap;}
+.logo-item{font-size:1.05rem;font-weight:800;color:var(--border2);letter-spacing:-0.3px;transition:color 0.2s;}
+.logo-item:hover{color:var(--muted);}
+
+/* stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow);}
+.stat-cell{padding:2.5rem 2rem;text-align:center;border-right:1px solid var(--border);background:#fff;}
+.stat-cell:last-child{border-right:none;}
+.stat-num{font-size:2.6rem;font-weight:800;letter-spacing:-2px;line-height:1;}
+.stat-lbl{font-size:0.78rem;color:var(--muted);margin-top:0.4rem;}
+.stat-note{font-size:0.68rem;color:var(--accent);font-weight:600;margin-top:0.3rem;}
+
+/* features grid */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.feat-card{padding:2rem;border-radius:var(--r-xl);border:1px solid var(--border);background:#fff;transition:all 0.22s;cursor:default;}
+.feat-card:hover{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-light),var(--shadow-md);transform:translateY(-2px);}
+.feat-icon{width:48px;height:48px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:1.25rem;border:1px solid var(--border);}
+.feat-card h3{font-size:1.05rem;font-weight:700;margin-bottom:0.5rem;}
+.feat-card p{font-size:0.875rem;color:var(--muted);line-height:1.7;}
+.feat-link{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.82rem;font-weight:700;color:var(--accent);margin-top:1rem;transition:gap 0.15s;}
+.feat-link:hover{gap:0.5rem;}
+
+/* modules */
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.mod-grid.rev{direction:rtl;}
+.mod-grid.rev>*{direction:ltr;}
+.mod-text h2{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;letter-spacing:-1px;margin-bottom:1rem;}
+.mod-text p{font-size:0.975rem;color:var(--muted);line-height:1.8;}
+.mod-list{margin-top:1.5rem;list-style:none;display:flex;flex-direction:column;gap:0.75rem;}
+.mod-list li{display:flex;align-items:flex-start;gap:0.75rem;font-size:0.9rem;color:var(--muted);}
+.mod-list li::before{content:'✓';width:20px;height:20px;background:var(--green-bg);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:900;flex-shrink:0;margin-top:1px;}
+.mod-btn{margin-top:2rem;}
+
+/* screen mock */
+.screen-wrap{border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--border);}
+.screen-bar{background:var(--off);padding:0.6rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.4rem;}
+.sdot{width:9px;height:9px;border-radius:50%;}
+.screen-url{flex:1;background:#fff;border:1px solid var(--border);border-radius:4px;padding:0.22rem 0.6rem;font-size:0.68rem;color:var(--muted);margin-left:0.5rem;font-family:monospace;}
+.screen-body{padding:1.25rem;background:#fff;}
+.sm-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1rem;}
+.sm-cell{background:var(--off);border-radius:var(--r);padding:0.7rem;}
+.sm-val{font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;}
+.sm-lbl{font-size:0.6rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
+.mini-tbl{width:100%;border-collapse:collapse;font-size:0.73rem;}
+.mini-tbl th{text-align:left;color:var(--muted);padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;}
+.mini-tbl td{padding:0.5rem 0.5rem;border-bottom:1px solid var(--border);}
+.mini-tbl tr:last-child td{border-bottom:none;}
+
+/* testimonials */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.testi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;box-shadow:var(--shadow);}
+.testi-stars{color:var(--yellow);font-size:0.85rem;margin-bottom:1rem;letter-spacing:2px;}
+.testi-quote{font-size:0.925rem;color:var(--text);line-height:1.75;margin-bottom:1.5rem;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:0.75rem;}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff;flex-shrink:0;}
+
+/* integrations */
+.int-strip{background:var(--off);border-radius:var(--r-xl);padding:3rem;text-align:center;}
+.int-icons{display:flex;align-items:center;justify-content:center;gap:1.25rem;flex-wrap:wrap;margin-top:2rem;}
+.int-badge{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:0.6rem 1.1rem;font-size:0.8rem;font-weight:700;color:var(--text);box-shadow:var(--shadow);transition:all 0.15s;cursor:default;}
+.int-badge:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+
+/* CTA */
+.cta-box{background:var(--accent);border-radius:var(--r-xl);padding:4rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.cta-box::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,0.08),transparent 70%);pointer-events:none;}
+.cta-box h2{font-size:clamp(2rem,3.5vw,2.8rem);font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:1rem;}
+.cta-box p{color:rgba(255,255,255,0.72);font-size:1.05rem;max-width:440px;margin:0 auto 2.25rem;}
+.cta-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+
+/* ══ FEATURES PAGE ══ */
+.features-hero{background:linear-gradient(135deg,#F0F4FF,#F7F8FA);padding:5rem 0 4rem;border-bottom:1px solid var(--border);}
+.feat-detail-grid{display:grid;grid-template-columns:220px 1fr;gap:3rem;}
+.feat-sidebar{position:sticky;top:calc(var(--nav-h) + 2rem);height:fit-content;}
+.feat-nav{display:flex;flex-direction:column;gap:0.25rem;}
+.feat-nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.9rem;border-radius:var(--r);font-size:0.875rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.15s;border:1px solid transparent;}
+.feat-nav-item:hover{background:var(--off);color:var(--text);}
+.feat-nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:700;border-color:rgba(0,87,255,0.15);}
+.feat-nav-ico{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.feat-blocks{display:flex;flex-direction:column;gap:2rem;}
+.feat-block{border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;background:#fff;}
+.feat-block-hdr{padding:2rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1.25rem;}
+.feat-block-ico{width:52px;height:52px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.feat-block-hdr h3{font-size:1.25rem;font-weight:800;margin-bottom:0.4rem;}
+.feat-block-hdr p{font-size:0.9rem;color:var(--muted);line-height:1.6;}
+.feat-block-body{padding:2rem;}
+.feat-pts{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+.feat-pt{display:flex;align-items:flex-start;gap:0.7rem;}
+.feat-pt-dot{width:20px;height:20px;background:var(--accent-light);border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;}
+.feat-pt-txt{font-size:0.875rem;color:var(--muted);line-height:1.6;}
+.feat-pt-txt strong{color:var(--text);font-weight:600;display:block;margin-bottom:0.15rem;}
+
+/* ══ PRICING PAGE ══ */
+.pricing-hero{background:linear-gradient(180deg,#F0F4FF,#fff);padding:5rem 0 4rem;border-bottom:1px solid var(--border);}
+.pricing-toggle{display:flex;align-items:center;gap:1rem;justify-content:center;margin-top:2rem;}
+.toggle-track{width:44px;height:24px;background:var(--accent);border-radius:100px;position:relative;cursor:pointer;transition:background 0.2s;}
+.toggle-thumb{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+.toggle-track.monthly .toggle-thumb{transform:translateX(20px);}
+.toggle-lbl{font-size:0.875rem;font-weight:600;color:var(--muted);}
+.toggle-lbl.on{color:var(--text);}
+.save-pill{background:var(--green-bg);color:var(--green);font-size:0.7rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:100px;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem;}
+.pricing-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);padding:2.25rem;position:relative;transition:all 0.22s;}
+.pricing-card:hover{box-shadow:var(--shadow-lg);}
+.pricing-card.popular{border:2px solid var(--accent);box-shadow:0 0 0 4px var(--accent-light),var(--shadow-md);}
+.popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:0.68rem;font-weight:700;padding:0.28rem 0.9rem;border-radius:100px;white-space:nowrap;text-transform:uppercase;letter-spacing:0.05em;}
+.price-tier{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.75rem;}
+.price-amount{display:flex;align-items:baseline;gap:0.2rem;margin-bottom:0.5rem;}
+.price-num{font-size:3rem;font-weight:800;letter-spacing:-2px;}
+.price-per{font-size:0.9rem;color:var(--muted);}
+.price-desc{font-size:0.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);}
+.price-feats{display:flex;flex-direction:column;gap:0.65rem;margin-bottom:2rem;}
+.price-feat{display:flex;align-items:flex-start;gap:0.65rem;font-size:0.875rem;color:var(--muted);}
+.price-feat::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
+.price-feat.na{color:var(--border2);}
+.price-feat.na::before{content:'–';color:var(--border2);}
+.price-btn{width:100%;padding:0.8rem;border-radius:var(--r);font-family:inherit;font-size:0.9rem;font-weight:700;transition:all 0.18s;border:1.5px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;}
+.price-btn:hover{border-color:var(--accent);color:var(--accent);}
+.price-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.price-btn.primary:hover{background:var(--accent-dark);}
+.ent-strip{background:var(--off);border:1px solid var(--border);border-radius:var(--r-xl);padding:2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;margin-top:2rem;flex-wrap:wrap;}
+.faq-wrap{max-width:720px;margin:5rem auto 0;}
+.faq-item{border-bottom:1px solid var(--border);padding:1.5rem 0;}
+.faq-q{font-size:1rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.faq-q::after{content:'＋';font-size:1.2rem;color:var(--muted);font-weight:300;transition:transform 0.2s;}
+.faq-item.open .faq-q::after{transform:rotate(45deg);}
+.faq-a{font-size:0.9rem;color:var(--muted);line-height:1.75;max-height:0;overflow:hidden;transition:max-height 0.3s,padding 0.3s;}
+.faq-item.open .faq-a{max-height:200px;padding-top:0.75rem;}
+
+/* ══ ABOUT PAGE ══ */
+.about-hero{background:var(--text);padding:6rem 0 5rem;color:#fff;}
+.about-hero h1{color:#fff;font-size:clamp(2.5rem,5vw,4rem);}
+.about-hero p{color:rgba(255,255,255,0.65);font-size:1.1rem;max-width:560px;line-height:1.75;margin-top:1.25rem;}
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+blockquote{font-family:'Instrument Serif',serif;font-size:1.6rem;font-style:italic;line-height:1.4;border-left:3px solid var(--accent);padding-left:1.5rem;margin-bottom:1.5rem;}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.value-card{padding:1.75rem;border-radius:var(--r-xl);border:1px solid var(--border);}
+.value-card h3{font-size:1rem;font-weight:700;margin-bottom:0.5rem;}
+.value-card p{font-size:0.875rem;color:var(--muted);line-height:1.65;}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+.team-card{text-align:center;}
+.team-av{width:80px;height:80px;border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;}
+.team-name{font-size:0.95rem;font-weight:700;}
+.team-title{font-size:0.8rem;color:var(--muted);margin-top:0.2rem;}
+.team-prev{font-size:0.75rem;color:var(--light);margin-top:0.15rem;}
+.numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);background:var(--text);border-radius:var(--r-xl);overflow:hidden;}
+.number-cell{padding:2.5rem 2rem;text-align:center;border-right:1px solid rgba(255,255,255,0.08);}
+.number-cell:last-child{border-right:none;}
+.number-val{font-size:2.5rem;font-weight:800;color:#fff;letter-spacing:-1.5px;}
+.number-lbl{font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:0.4rem;}
+
+/* ══ BLOG PAGE ══ */
+.blog-hero{background:var(--off);padding:4rem 0 3.5rem;border-bottom:1px solid var(--border);}
+.blog-filters{display:flex;align-items:center;gap:0.5rem;margin-top:2rem;flex-wrap:wrap;}
+.blog-filter{padding:0.45rem 1rem;border-radius:100px;font-size:0.8rem;font-weight:600;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.blog-filter:hover,.blog-filter.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.blog-featured{display:grid;grid-template-columns:1.5fr 1fr;gap:2rem;margin-bottom:3rem;}
+.blog-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;transition:all 0.22s;cursor:pointer;}
+.blog-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+.blog-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.blog-img.lg{height:280px;}
+.blog-body{padding:1.5rem;}
+.blog-cat{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:0.5rem;}
+.blog-card h3{font-size:1.1rem;font-weight:700;line-height:1.35;margin-bottom:0.6rem;letter-spacing:-0.3px;}
+.blog-card h3.sm{font-size:0.975rem;}
+.blog-card p{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+.blog-meta{display:flex;align-items:center;gap:1rem;margin-top:1rem;font-size:0.75rem;color:var(--muted);}
+.blog-av{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:#fff;}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+
+/* ══ CONTACT PAGE ══ */
+.contact-hero{background:linear-gradient(135deg,#0F1117,#1a1d2e);padding:5rem 0 4rem;color:#fff;}
+.contact-hero h1{color:#fff;}
+.contact-hero p{color:rgba(255,255,255,0.6);max-width:500px;font-size:1.05rem;line-height:1.75;margin-top:1rem;}
+.contact-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:4rem;align-items:start;}
+.contact-info h2{font-size:1.5rem;font-weight:800;margin-bottom:1rem;}
+.contact-info p{font-size:0.9rem;color:var(--muted);line-height:1.75;margin-bottom:2rem;}
+.contact-channels{display:flex;flex-direction:column;gap:1rem;}
+.cc{display:flex;align-items:center;gap:1rem;padding:1.1rem;background:var(--off);border-radius:var(--r-lg);border:1px solid var(--border);}
+.cc-ico{width:40px;height:40px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.cc-lbl{font-size:0.8rem;font-weight:600;}
+.cc-val{font-size:0.82rem;color:var(--muted);}
+.contact-form-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);padding:2.5rem;box-shadow:var(--shadow-lg);}
+.contact-form-card h3{font-size:1.25rem;font-weight:800;margin-bottom:0.5rem;}
+.form-sub{font-size:0.875rem;color:var(--muted);margin-bottom:2rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.25rem;}
+.form-group label{font-size:0.78rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.05em;}
+.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:var(--r);font-family:inherit;font-size:0.9rem;color:var(--text);outline:none;transition:border-color 0.15s;}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.form-input::placeholder{color:var(--light);}
+textarea.form-input{resize:vertical;min-height:110px;}
+select.form-input{cursor:pointer;background:#fff;}
+.form-submit{width:100%;padding:0.875rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.18s;}
+.form-submit:hover{background:var(--accent-dark);}
+.offices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:5rem;}
+.office-card{padding:1.75rem;border:1px solid var(--border);border-radius:var(--r-xl);}
+.office-city{font-size:1rem;font-weight:800;margin-bottom:0.3rem;}
+.office-addr{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+
+/* ══ DASHBOARD ══ */
+.d-sidebar{width:220px;background:var(--ds);border-right:1px solid var(--dborder);display:flex;flex-direction:column;flex-shrink:0;}
+.d-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.d-header{height:62px;background:var(--ds);border-bottom:1px solid var(--dborder);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;flex-shrink:0;}
+.d-content{flex:1;overflow-y:auto;padding:1.5rem;}
+.d-slogo{padding:1.2rem 1.2rem 1rem;display:flex;align-items:center;gap:0.6rem;border-bottom:1px solid var(--dborder);}
+.d-mark{width:28px;height:28px;background:var(--da);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000;flex-shrink:0;}
+.d-name{font-weight:800;font-size:1rem;color:var(--dt);}
+.d-name span{color:var(--da);}
+.d-back-btn{display:flex;align-items:center;gap:0.5rem;padding:0.55rem 0.8rem;margin:0.6rem 0.5rem;border-radius:6px;font-size:0.78rem;color:var(--dm);cursor:pointer;transition:all 0.15s;border:1px solid var(--dborder);}
+.d-back-btn:hover{background:var(--ds2);color:var(--dt);}
+.d-nav-sec{padding:0.9rem 0.75rem 0.4rem;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--dm);}
+.d-nav-item{display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.75rem;border-radius:6px;cursor:pointer;color:var(--dm);font-size:0.85rem;font-weight:500;transition:all 0.15s;margin:1px 0.3rem;}
+.d-nav-item:hover{background:var(--ds2);color:var(--dt);}
+.d-nav-item.active{background:rgba(232,197,71,0.1);color:var(--da);}
+.d-nav-ico{width:15px;height:15px;opacity:0.7;flex-shrink:0;}
+.d-nav-item.active .d-nav-ico{opacity:1;}
+.d-badge{margin-left:auto;background:rgba(247,110,110,0.15);border:1px solid rgba(247,110,110,0.3);color:var(--dr);border-radius:100px;padding:0.08rem 0.45rem;font-size:0.62rem;font-weight:700;}
+.d-sidebar-btm{margin-top:auto;padding:0.75rem;border-top:1px solid var(--dborder);}
+.d-user-row{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.5rem;}
+.d-av{width:28px;height:28px;background:var(--da2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:#fff;flex-shrink:0;}
+.d-uname{font-size:0.78rem;font-weight:600;color:var(--dt);}
+.d-urole{font-size:0.68rem;color:var(--dm);}
+.d-logout-btn{margin-top:0.4rem;width:100%;padding:0.45rem;background:transparent;border:1px solid var(--dborder);border-radius:6px;color:var(--dm);font-size:0.75rem;cursor:pointer;transition:all 0.15s;font-family:inherit;}
+.d-logout-btn:hover{background:var(--ds2);color:var(--dr);border-color:rgba(247,110,110,0.3);}
+.d-htitle{font-weight:700;font-size:1rem;color:var(--dt);}
+.d-search{flex:1;max-width:320px;margin-left:0.5rem;position:relative;}
+.d-search input{width:100%;background:var(--ds2);border:1px solid var(--dborder);border-radius:6px;padding:0.42rem 0.75rem 0.42rem 1.9rem;color:var(--dt);font-family:inherit;font-size:0.78rem;outline:none;transition:border-color 0.15s;}
+.d-search input:focus{border-color:var(--dborder2);}
+.d-search input::placeholder{color:var(--dm);}
+.d-search-ico{position:absolute;left:0.6rem;top:50%;transform:translateY(-50%);color:var(--dm);font-size:11px;}
+.d-hright{margin-left:auto;display:flex;align-items:center;gap:0.75rem;}
+.d-hbtn{background:var(--ds2);border:1px solid var(--dborder);border-radius:6px;padding:0.38rem 0.8rem;font-size:0.72rem;font-weight:600;color:var(--dm);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.4rem;}
+.d-hbtn:hover{border-color:var(--dborder2);color:var(--dt);}
+.d-notif-dot{width:6px;height:6px;background:var(--dr);border-radius:50%;}
+.d-new-btn{background:var(--da);color:#000;border:none;border-radius:6px;padding:0.42rem 0.9rem;font-weight:700;font-size:0.75rem;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
+.d-new-btn:hover{opacity:0.85;}
+/* Dashboard tabs */
+.d-tab{display:none;}
+.d-tab.active{display:block;}
+.d-tabbar{display:flex;border-bottom:1px solid var(--dborder);margin-bottom:1.5rem;}
+.d-tabpill{padding:0.55rem 1rem;font-size:0.78rem;font-weight:600;color:var(--dm);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;}
+.d-tabpill:hover{color:var(--dt);}
+.d-tabpill.active{color:var(--da);border-bottom-color:var(--da);}
+/* Metrics */
+.d-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.d-mcard{background:var(--ds);border:1px solid var(--dborder);border-radius:10px;padding:1.1rem 1.2rem;}
+.d-mlabel{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--dm);margin-bottom:0.45rem;}
+.d-mval{font-size:1.65rem;font-weight:700;color:var(--dt);line-height:1;}
+.d-mdelta{display:flex;align-items:center;gap:0.3rem;margin-top:0.4rem;font-size:0.72rem;font-weight:600;}
+.d-dup{color:var(--dg);}
+.d-ddown{color:var(--dr);}
+.d-dlbl{color:var(--dm);font-weight:400;}
+/* Panels */
+.d-panel-row{display:grid;grid-template-columns:1.6fr 1fr;gap:1rem;margin-bottom:1rem;}
+.d-panel{background:var(--ds);border:1px solid var(--dborder);border-radius:10px;padding:1.2rem;margin-bottom:1rem;}
+.d-panel:last-child{margin-bottom:0;}
+.d-phdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.d-ptitle{font-size:0.83rem;font-weight:700;color:var(--dt);}
+.d-paction{font-size:0.7rem;color:var(--da2);cursor:pointer;font-weight:600;}
+/* Chart */
+.d-barchart{display:flex;align-items:flex-end;gap:3px;height:78px;}
+.d-bbar{flex:1;border-radius:3px 3px 0 0;transition:opacity 0.15s;cursor:pointer;}
+.d-bbar:hover{opacity:0.65;}
+/* SKU bars */
+.d-sku-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.55rem;}
+.d-sku-name{font-size:0.75rem;color:var(--dt);width:105px;flex-shrink:0;font-weight:500;font-family:monospace;}
+.d-sku-track{flex:1;background:var(--ds2);border-radius:100px;height:5px;overflow:hidden;}
+.d-sku-fill{height:100%;border-radius:100px;}
+.d-sku-cnt{font-family:monospace;font-size:0.7rem;color:var(--dm);width:32px;text-align:right;flex-shrink:0;}
+/* Tables */
+.d-tbl{width:100%;border-collapse:collapse;}
+.d-tbl th{text-align:left;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--dm);padding:0.55rem 0.7rem;border-bottom:1px solid var(--dborder);}
+.d-tbl td{padding:0.6rem 0.7rem;border-bottom:1px solid var(--dborder);font-size:0.8rem;color:var(--dt);vertical-align:middle;}
+.d-tbl tr:last-child td{border-bottom:none;}
+.d-tbl tr:hover td{background:var(--ds2);}
+.d-tbl tr{cursor:pointer;}
+/* Pills */
+.dpill{display:inline-flex;align-items:center;gap:0.28rem;padding:0.18rem 0.55rem;border-radius:100px;font-size:0.63rem;font-weight:700;text-transform:uppercase;}
+.dpill::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;}
+.dp-g{background:rgba(61,214,140,0.11);color:var(--dg);}
+.dp-r{background:rgba(247,110,110,0.11);color:var(--dr);}
+.dp-a{background:rgba(247,169,79,0.11);color:var(--do);}
+.dp-b{background:rgba(91,156,246,0.11);color:var(--da2);}
+.dp-p{background:rgba(167,139,250,0.11);color:var(--dp);}
+.d-chbadge{display:inline-block;padding:0.13rem 0.48rem;border-radius:4px;font-size:0.63rem;font-weight:700;background:var(--ds2);border:1px solid var(--dborder);color:var(--dm);}
+/* Filter bar */
+.d-fbar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;}
+.d-fsel{background:var(--ds2);border:1px solid var(--dborder);border-radius:6px;padding:0.38rem 0.65rem;color:var(--dt);font-family:inherit;font-size:0.75rem;outline:none;cursor:pointer;}
+.d-fcnt{margin-left:auto;font-size:0.72rem;color:var(--dm);}
+.d-btn-sm{background:var(--da);color:#000;border:none;border-radius:6px;padding:0.4rem 0.9rem;font-weight:700;font-size:0.72rem;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
+.d-btn-sm:hover{opacity:0.85;}
+.d-btn-ghost{background:transparent;border:1px solid var(--dborder);color:var(--dt);border-radius:6px;padding:0.4rem 0.9rem;font-size:0.75rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.d-btn-ghost:hover{border-color:var(--dborder2);background:var(--ds2);}
+/* AI Panel */
+.d-ai-panel{background:linear-gradient(135deg,rgba(91,156,246,0.07),rgba(167,139,250,0.07));border:1px solid rgba(91,156,246,0.18);border-radius:10px;padding:1.2rem;margin-bottom:1rem;}
+.d-ai-hdr{display:flex;align-items:center;gap:0.55rem;margin-bottom:0.7rem;}
+.d-ai-ico{width:21px;height:21px;background:var(--da2);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0;}
+.d-ai-title{font-size:0.8rem;font-weight:700;color:var(--da2);}
+.d-ai-status{font-size:0.68rem;color:var(--dm);margin-left:auto;}
+.d-ai-body{font-size:0.8rem;color:var(--dt);line-height:1.65;min-height:44px;white-space:pre-wrap;}
+.d-ai-chips{display:flex;gap:0.45rem;margin-top:0.8rem;flex-wrap:wrap;}
+.d-ai-chip{background:rgba(91,156,246,0.09);border:1px solid rgba(91,156,246,0.18);border-radius:100px;padding:0.22rem 0.65rem;font-size:0.68rem;color:var(--da2);cursor:pointer;font-weight:500;transition:all 0.15s;}
+.d-ai-chip:hover{background:rgba(91,156,246,0.18);}
+.ai-typing{display:inline-flex;gap:3px;align-items:center;}
+.ai-typing span{width:4px;height:4px;background:var(--da2);border-radius:50%;animation:blink 1.2s infinite;}
+.ai-typing span:nth-child(2){animation-delay:0.2s;}
+.ai-typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,80%,100%{opacity:0.2;}40%{opacity:1;}}
+/* Progress */
+.d-prog{background:var(--ds2);border-radius:100px;height:5px;}
+.d-prog-fill{height:100%;border-radius:100px;}
+
+/* ══ MODAL ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);display:flex;align-items:center;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--ds);border:1px solid var(--dborder2);border-radius:14px;width:500px;max-width:90vw;max-height:85vh;overflow-y:auto;animation:mIn 0.22s ease both;}
+@keyframes mIn{from{transform:translateY(10px) scale(0.97);opacity:0;}to{transform:none;opacity:1;}}
+.modal-hdr{padding:1.2rem 1.5rem;border-bottom:1px solid var(--dborder);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:1rem;font-weight:700;color:var(--dt);}
+.modal-close{width:27px;height:27px;border-radius:6px;background:var(--ds2);border:none;color:var(--dm);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.modal-close:hover{color:var(--dt);}
+.modal-body{padding:1.4rem 1.5rem;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.9rem;}
+.mfield label{display:block;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--dm);margin-bottom:0.38rem;}
+.mfield .mval{font-size:0.88rem;color:var(--dt);font-weight:500;}
+.modal-sec{font-size:0.75rem;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:0.08em;margin:1.1rem 0 0.7rem;padding-top:1rem;border-top:1px solid var(--dborder);}
+.timeline{display:flex;flex-direction:column;gap:0.7rem;}
+.tl-item{display:flex;gap:0.7rem;align-items:flex-start;}
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.tl-txt{font-size:0.78rem;color:var(--dm);}
+.tl-txt strong{color:var(--dt);font-weight:600;}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--dborder);display:flex;gap:0.7rem;justify-content:flex-end;}
+.minput{width:100%;background:var(--ds2);border:1px solid var(--dborder);border-radius:6px;padding:0.5rem 0.65rem;color:var(--dt);font-family:inherit;font-size:0.83rem;outline:none;transition:border-color 0.15s;}
+.minput:focus{border-color:var(--dborder2);}
+
+/* ══ FOOTER ══ */
+.footer{background:var(--text);color:rgba(255,255,255,0.55);padding:4rem 0 2rem;}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
+.footer-brand p{font-size:0.85rem;line-height:1.75;color:rgba(255,255,255,0.45);margin-top:1rem;max-width:240px;}
+.footer-col h4{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.85);margin-bottom:1.25rem;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:0.7rem;}
+.footer-col ul li a{font-size:0.85rem;color:rgba(255,255,255,0.45);transition:color 0.15s;cursor:pointer;}
+.footer-col ul li a:hover{color:#fff;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.07);padding-top:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{font-size:0.78rem;color:rgba(255,255,255,0.3);}
+.footer-socials{display:flex;gap:0.75rem;}
+.social-btn{width:32px;height:32px;background:rgba(255,255,255,0.06);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:rgba(255,255,255,0.45);transition:all 0.15s;cursor:pointer;}
+.social-btn:hover{background:var(--accent);color:#fff;}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:900px){
+  .hero-grid,.mod-grid,.mission-grid,.contact-grid,.feat-detail-grid{grid-template-columns:1fr;}
+  .mod-grid.rev{direction:ltr;}
+  .hero-visual,.float-1,.float-2{display:none;}
+  .features-grid,.testi-grid,.team-grid,.offices-grid{grid-template-columns:1fr 1fr;}
+  .pricing-grid,.blog-grid,.values-grid{grid-template-columns:1fr 1fr;}
+  .stats-row,.numbers-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-cell:nth-child(2){border-right:none;}
+  .blog-featured{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .nav-links{display:none;}
+  .d-sidebar{display:none;}
+  .d-metrics{grid-template-columns:repeat(2,1fr);}
+  .d-panel-row{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .features-grid,.testi-grid,.pricing-grid,.blog-grid,.values-grid,.team-grid,.offices-grid{grid-template-columns:1fr;}
+  .stats-row,.numbers-grid{grid-template-columns:1fr 1fr;}
+  .hero{padding:3.5rem 0 2.5rem;}
+  .section{padding:3rem 0;}
+  .hero h1{font-size:2.2rem;}
+  .hero-actions{flex-direction:column;}
+  .form-row{grid-template-columns:1fr;}
+  .modal-row{grid-template-columns:1fr;}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.fade-up{animation:fadeUp 0.5s ease both;}
+.fade-up-1{animation:fadeUp 0.5s 0.1s ease both;}
+.fade-up-2{animation:fadeUp 0.5s 0.2s ease both;}
+.fade-up-3{animation:fadeUp 0.5s 0.3s ease both;}
+</style>
+</head>
+<body>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════ -->
+<nav class="nav" id="main-nav">
+  <div class="nav-logo" onclick="nav('home')">
+    <div class="nav-mark">N</div>
+    <div class="nav-name">Nexus<span>.</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="nav('home')"     id="nl-home"     class="active">Home</a></li>
+    <li><a href="#" onclick="nav('features')" id="nl-features">Features</a></li>
+    <li><a href="#" onclick="nav('pricing')"  id="nl-pricing">Pricing</a></li>
+    <li><a href="#" onclick="nav('about')"    id="nl-about">About</a></li>
+    <li><a href="#" onclick="nav('blog')"     id="nl-blog" class="new-badge">Blog</a></li>
+    <li><a href="#" onclick="nav('contact')"  id="nl-contact">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-nav-ghost" onclick="showLoginModal()">Sign in</button>
+    <button class="btn-primary-nav" onclick="nav('contact')">Get a demo →</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     ORDER DETAIL MODAL
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title" id="mod-order-id">Order</div>
+      <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <div class="mfield"><label>Customer</label><div class="mval" id="mod-cust">—</div></div>
+        <div class="mfield"><label>Channel</label><div class="mval" id="mod-chan">—</div></div>
+        <div class="mfield"><label>Value</label><div class="mval" id="mod-val">—</div></div>
+        <div class="mfield"><label>Status</label><div class="mval" id="mod-stat">—</div></div>
+        <div class="mfield"><label>SLA</label><div class="mval" id="mod-sla">—</div></div>
+        <div class="mfield"><label>AWB</label><div class="mval" id="mod-awb" style="font-family:monospace;font-size:0.78rem">—</div></div>
+      </div>
+      <div class="modal-sec">Timeline</div>
+      <div class="timeline" id="mod-timeline"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="d-btn-ghost" onclick="closeModal('orderModal')">Close</button>
+      <button class="d-btn-sm" id="mod-action-btn">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     NEW ORDER MODAL
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="newOrderModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title">Create new order</div>
+      <button class="modal-close" onclick="closeModal('newOrderModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <div class="mfield"><label>Customer name</label><input class="minput" id="no-cust" placeholder="Priya Sharma"/></div>
+        <div class="mfield"><label>Channel</label>
+          <select class="minput" id="no-chan"><option>Shopify</option><option>Amazon</option><option>Flipkart</option><option>Myntra</option><option>Meesho</option></select>
+        </div>
+        <div class="mfield"><label>SKU</label><input class="minput" id="no-sku" placeholder="SHOE-BLK-42"/></div>
+        <div class="mfield"><label>Value (₹)</label><input type="number" class="minput" id="no-val" placeholder="0"/></div>
+        <div class="mfield"><label>Qty</label><input type="number" class="minput" id="no-qty" placeholder="1" value="1"/></div>
+        <div class="mfield"><label>Warehouse</label>
+          <select class="minput" id="no-wh"><option>WH-MUM-01</option><option>WH-DEL-02</option><option>WH-BLR-03</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="d-btn-ghost" onclick="closeModal('newOrderModal')">Cancel</button>
+      <button class="d-btn-sm" onclick="submitNewOrder()">Create order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     LOGIN MODAL
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="modal-hdr">
+      <div class="modal-title">Sign in to Nexus</div>
+      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="login-err" style="display:none;background:rgba(247,110,110,0.12);border:1px solid rgba(247,110,110,0.25);border-radius:6px;padding:0.6rem 0.8rem;font-size:0.8rem;color:var(--dr);margin-bottom:1rem;">Invalid email or password</div>
+      <div class="mfield" style="margin-bottom:1rem"><label>Email</label><input class="minput" id="li-email" type="email" value="admin@nexus.com"/></div>
+      <div class="mfield" style="margin-bottom:1.5rem"><label>Password</label><input class="minput" id="li-pass" type="password" value="password123"/></div>
+      <button onclick="doLogin()" style="width:100%;padding:0.75rem;background:var(--da);color:#000;border:none;border-radius:6px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:inherit;">Sign in →</button>
+      <div style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--dm)">
+        Demo: <span style="color:var(--da2);cursor:pointer" onclick="fillCreds('admin')">Admin</span> ·
+        <span style="color:var(--da2);cursor:pointer" onclick="fillCreds('manager')">Manager</span> ·
+        <span style="color:var(--da2);cursor:pointer" onclick="fillCreds('operator')">Operator</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-eyebrow fade-up"><span class="live-dot"></span>Trusted by 500+ Indian brands</div>
+          <h1 class="fade-up-1">The <em>unified</em> platform for commerce operations.</h1>
+          <p class="hero-sub fade-up-2">Orders, inventory, warehouses, and AI analytics — all in one intelligent system built for India's fastest-growing brands.</p>
+          <div class="hero-actions fade-up-3">
+            <button class="btn btn-blue" onclick="showLoginModal()">Start free trial →</button>
+            <button class="btn btn-outline" onclick="nav('features')">See all features</button>
+          </div>
+          <div class="social-proof fade-up-3">
+            <div class="avatar-stack">
+              <span style="background:var(--accent)">PS</span>
+              <span style="background:#6366F1">KM</span>
+              <span style="background:var(--green)">RN</span>
+              <span style="background:var(--accent2)">+</span>
+            </div>
+            <div class="proof-text"><strong>500+ brands</strong> already on Nexus<br>⭐⭐⭐⭐⭐ 4.9 on G2</div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="float-badge float-1">
+            <div class="fbi" style="background:var(--green-bg)">✓</div>
+            <div><div style="font-size:0.78rem;font-weight:700">Order shipped</div><div style="font-size:0.7rem;color:var(--muted)">ORD-8821 · Delhivery</div></div>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-hdr">
+              <div class="hero-card-title">Today's performance</div>
+              <span class="badge b-green">Live</span>
+            </div>
+            <div class="hero-metrics">
+              <div class="hero-metric"><div class="hero-metric-val">₹42.3L</div><div class="hero-metric-lbl">GMV</div><div class="hero-metric-delta">▲ 12.4%</div></div>
+              <div class="hero-metric"><div class="hero-metric-val">1,847</div><div class="hero-metric-lbl">Orders</div><div class="hero-metric-delta">▲ 8.1%</div></div>
+              <div class="hero-metric"><div class="hero-metric-val">96.2%</div><div class="hero-metric-lbl">SLA</div><div class="hero-metric-delta" style="color:var(--red)">▼ 1.3%</div></div>
+            </div>
+            <div class="hero-sparkline" id="sparkline"></div>
+            <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:0.5rem">Recent orders</div>
+            <div class="hero-order-row"><span style="font-family:monospace;font-size:0.75rem">#ORD-8821</span><span class="badge b-green">Shipped</span><span style="font-size:0.75rem;color:var(--muted)">₹3,240</span></div>
+            <div class="hero-order-row"><span style="font-family:monospace;font-size:0.75rem">#ORD-8820</span><span class="badge b-blue">Packed</span><span style="font-size:0.75rem;color:var(--muted)">₹1,899</span></div>
+            <div class="hero-order-row"><span style="font-family:monospace;font-size:0.75rem">#ORD-8819</span><span class="badge b-yellow">Pending</span><span style="font-size:0.75rem;color:var(--muted)">₹5,670</span></div>
+          </div>
+          <div class="float-badge float-2">
+            <div class="fbi" style="background:var(--yellow-bg)">⚠️</div>
+            <div><div style="font-size:0.78rem;font-weight:700">Low stock alert</div><div style="font-size:0.7rem;color:var(--muted)">BAG-TAN-M · 34 units</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="logos-strip">
+    <div class="container">
+      <div class="logos-lbl">Powering commerce operations for</div>
+      <div class="logos-row">
+        <span class="logo-item">Meesho</span><span class="logo-item">Nykaa</span><span class="logo-item">Lenskart</span>
+        <span class="logo-item">Mamaearth</span><span class="logo-item">boAt</span><span class="logo-item">Myntra</span>
+        <span class="logo-item">Bewakoof</span><span class="logo-item">Clovia</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat-cell"><div class="stat-num">12M+</div><div class="stat-lbl">Orders processed daily</div><div class="stat-note">↑ 40% YoY</div></div>
+        <div class="stat-cell"><div class="stat-num">99.9%</div><div class="stat-lbl">Platform uptime</div><div class="stat-note">5-nines reliability</div></div>
+        <div class="stat-cell"><div class="stat-num">40+</div><div class="stat-lbl">Channel integrations</div><div class="stat-note">Amazon, Flipkart…</div></div>
+        <div class="stat-cell"><div class="stat-num">3×</div><div class="stat-lbl">Avg. fulfilment speed</div><div class="stat-note">vs. manual ops</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--off)">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:3.5rem">
+        <div class="sec-tag">The platform</div>
+        <h2 class="headline">Everything your commerce<br>operation needs.</h2>
+        <p class="subhead">Nexus replaces a dozen disconnected tools with one unified, intelligent platform.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feat-card" onclick="nav('features')"><div class="feat-icon" style="background:#EEF3FF">📊</div><h3>Dashboard & Analytics</h3><p>Real-time GMV, channel performance, SLA tracking, and inventory health in a single cockpit.</p><div class="feat-link">Explore →</div></div>
+        <div class="feat-card" onclick="nav('features')"><div class="feat-icon" style="background:#FFF7ED">📦</div><h3>Order Management</h3><p>Centralise orders from 40+ channels. Automate routing, SLA tracking, and exception handling.</p><div class="feat-link">Explore →</div></div>
+        <div class="feat-card" onclick="nav('features')"><div class="feat-icon" style="background:#EDFAF5">🗃️</div><h3>Inventory Management</h3><p>Multi-location real-time sync. Set reorder rules, manage kits, prevent overselling.</p><div class="feat-link">Explore →</div></div>
+        <div class="feat-card" onclick="nav('features')"><div class="feat-icon" style="background:#FFFBEB">🏭</div><h3>Warehouse Management</h3><p>Optimised pick-pack-ship flows. Barcode scanning, slot management, courier manifests.</p><div class="feat-link">Explore →</div></div>
+        <div class="feat-card" onclick="nav('features')"><div class="feat-icon" style="background:#F3F0FF">🤖</div><h3>AI Insights</h3><p>Claude-powered commerce intelligence. Ask anything, get instant actionable recommendations.</p><div class="feat-link">Explore →</div></div>
+        <div class="feat-card" onclick="nav('features')"><div class="feat-icon" style="background:#FFF0F0">🔄</div><h3>Returns & Exchanges</h3><p>Streamlined reverse logistics with automated QC workflows and instant credit issuance.</p><div class="feat-link">Explore →</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="mod-grid">
+        <div class="mod-text">
+          <div class="sec-tag">Analytics</div>
+          <h2>Your commerce command centre.</h2>
+          <p>See everything at a glance — from channel-level revenue to SKU-level performance. No more spreadsheets.</p>
+          <ul class="mod-list"><li>Live GMV and order volume across all channels</li><li>Cancellation, RTO & return rate tracking</li><li>Inventory ageing and dead-stock alerts</li><li>Customisable dashboards per team role</li></ul>
+          <div class="mod-btn"><button class="btn btn-blue btn-sm" onclick="nav('features')">See analytics features →</button></div>
+        </div>
+        <div class="screen-wrap">
+          <div class="screen-bar"><div class="sdot" style="background:#FF5F56"></div><div class="sdot" style="background:#FFBD2E"></div><div class="sdot" style="background:#27C93F"></div><div class="screen-url">app.nexus.com/analytics</div></div>
+          <div class="screen-body">
+            <div class="sm-metrics"><div class="sm-cell"><div class="sm-val">₹42.3L</div><div class="sm-lbl">GMV</div></div><div class="sm-cell"><div class="sm-val">1,847</div><div class="sm-lbl">Orders</div></div><div class="sm-cell"><div class="sm-val">96.2%</div><div class="sm-lbl">SLA</div></div></div>
+            <table class="mini-tbl"><thead><tr><th>Channel</th><th>Orders</th><th>SLA%</th><th>Status</th></tr></thead><tbody>
+              <tr><td>Amazon</td><td>621</td><td style="color:var(--green)">98.1%</td><td><span class="badge b-green">Healthy</span></td></tr>
+              <tr><td>Flipkart</td><td>488</td><td style="color:var(--yellow)">93.4%</td><td><span class="badge b-yellow">Watch</span></td></tr>
+              <tr><td>Myntra</td><td>248</td><td style="color:var(--red)">88.7%</td><td><span class="badge b-red">Action</span></td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--off)">
+    <div class="container">
+      <div class="mod-grid rev">
+        <div class="mod-text">
+          <div class="sec-tag">Order Management</div>
+          <h2>Every order, always on time.</h2>
+          <p>Centralise and automate order operations across every marketplace and D2C channel.</p>
+          <ul class="mod-list"><li>Unified order queue from all marketplaces</li><li>Smart routing based on location and stock</li><li>Automated SLA breach alerts</li><li>Bulk label printing and courier integration</li></ul>
+          <div class="mod-btn"><button class="btn btn-blue btn-sm" onclick="nav('features')">See order features →</button></div>
+        </div>
+        <div class="screen-wrap">
+          <div class="screen-bar"><div class="sdot" style="background:#FF5F56"></div><div class="sdot" style="background:#FFBD2E"></div><div class="sdot" style="background:#27C93F"></div><div class="screen-url">app.nexus.com/orders</div></div>
+          <div class="screen-body">
+            <table class="mini-tbl"><thead><tr><th>Order ID</th><th>Customer</th><th>Channel</th><th>Status</th><th>SLA</th></tr></thead><tbody>
+              <tr><td style="font-family:monospace">#ORD-8821</td><td>Priya S.</td><td>Amazon</td><td><span class="badge b-green">Shipped</span></td><td style="color:var(--green)">2h</td></tr>
+              <tr><td style="font-family:monospace">#ORD-8820</td><td>Karan M.</td><td>Flipkart</td><td><span class="badge b-blue">Packed</span></td><td>4h</td></tr>
+              <tr><td style="font-family:monospace">#ORD-8819</td><td>Ritu N.</td><td>Myntra</td><td><span class="badge b-yellow">Pending</span></td><td style="color:var(--yellow)">1h</td></tr>
+              <tr><td style="font-family:monospace">#ORD-8817</td><td>Ananya R.</td><td>Meesho</td><td><span class="badge b-red">SLA Breach</span></td><td style="color:var(--red)">Late</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:3.5rem">
+        <div class="sec-tag">Testimonials</div>
+        <h2 class="headline">Loved by operations teams<br>across India.</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Nexus reduced our order processing time by 68%. We went from 3 dedicated ops people to running everything with one person and an AI."</p><div class="testi-author"><div class="testi-av" style="background:var(--accent)">RK</div><div><div style="font-size:0.85rem;font-weight:700">Rohan Kapoor</div><div style="font-size:0.75rem;color:var(--muted)">VP Operations · Lenskart</div></div></div></div>
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Inventory sync across Flipkart, Amazon, and our Shopify store is flawless. No oversell incidents in 8 months."</p><div class="testi-author"><div class="testi-av" style="background:#6366F1">AS</div><div><div style="font-size:0.85rem;font-weight:700">Anjali Sharma</div><div style="font-size:0.75rem;color:var(--muted)">Supply Chain · Mamaearth</div></div></div></div>
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">"The AI insights are genuinely useful — it flagged our Myntra SLA slipping three days before we noticed and told us exactly what to fix."</p><div class="testi-author"><div class="testi-av" style="background:var(--green)">VP</div><div><div style="font-size:0.85rem;font-weight:700">Vikram Patel</div><div style="font-size:0.75rem;color:var(--muted)">Founder · BoldFit</div></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm" style="background:var(--off)">
+    <div class="container">
+      <div class="int-strip">
+        <div class="sec-tag">Integrations</div>
+        <h2 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:0.5rem">Connect every tool you already use.</h2>
+        <p style="font-size:0.9rem;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7">Pre-built connectors for all major marketplaces, ERPs, couriers, and payment gateways.</p>
+        <div class="int-icons">
+          <div class="int-badge">Amazon</div><div class="int-badge">Flipkart</div><div class="int-badge">Myntra</div><div class="int-badge">Meesho</div><div class="int-badge">Shopify</div><div class="int-badge">WooCommerce</div><div class="int-badge">Delhivery</div><div class="int-badge">BlueDart</div><div class="int-badge">Ekart</div><div class="int-badge">XpressBees</div><div class="int-badge">Zoho</div><div class="int-badge">Tally</div><div class="int-badge">Razorpay</div><div class="int-badge">+27 more</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Ready to unify your commerce?</h2>
+        <p>Join 500+ brands already running on Nexus. Get started in under 30 minutes.</p>
+        <div class="cta-actions">
+          <button class="btn btn-white" onclick="showLoginModal()">Start free trial →</button>
+          <button class="btn btn-white-outline" onclick="nav('contact')">Schedule a demo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /home -->
+
+<!-- ══════════════════════════════════════════════
+     PAGE: FEATURES
+══════════════════════════════════════════════ -->
+<div id="page-features" class="page">
+  <section class="features-hero">
+    <div class="container text-center">
+      <div class="sec-tag">Platform features</div>
+      <h1 class="headline">Built for serious commerce<br>operations at scale.</h1>
+      <p class="subhead">Every feature designed around the real challenges Indian D2C brands face selling across multiple channels.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="feat-detail-grid">
+        <div class="feat-sidebar">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem">Jump to</div>
+          <div class="feat-nav">
+            <div class="feat-nav-item active" onclick="activeFeatNav(this,'feat-analytics')"><div class="feat-nav-ico" style="background:#EEF3FF">📊</div>Analytics</div>
+            <div class="feat-nav-item" onclick="activeFeatNav(this,'feat-orders')"><div class="feat-nav-ico" style="background:#FFF7ED">📦</div>Orders</div>
+            <div class="feat-nav-item" onclick="activeFeatNav(this,'feat-inventory')"><div class="feat-nav-ico" style="background:#EDFAF5">🗃️</div>Inventory</div>
+            <div class="feat-nav-item" onclick="activeFeatNav(this,'feat-warehouse')"><div class="feat-nav-ico" style="background:#FFFBEB">🏭</div>Warehouse</div>
+            <div class="feat-nav-item" onclick="activeFeatNav(this,'feat-ai')"><div class="feat-nav-ico" style="background:#F3F0FF">🤖</div>AI Insights</div>
+            <div class="feat-nav-item" onclick="activeFeatNav(this,'feat-returns')"><div class="feat-nav-ico" style="background:#FFF0F0">🔄</div>Returns</div>
+          </div>
+        </div>
+        <div class="feat-blocks">
+          <div class="feat-block" id="feat-analytics">
+            <div class="feat-block-hdr"><div class="feat-block-ico" style="background:#EEF3FF">📊</div><div><h3>Dashboard & Analytics</h3><p>A real-time unified view of every metric that matters — across all channels, warehouses, and SKUs.</p></div></div>
+            <div class="feat-block-body"><div class="feat-pts">
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Live GMV dashboard</strong>Real-time revenue tracking with hourly and daily breakdowns.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Channel comparison</strong>Side-by-side SLA, GMV, and return rate metrics per marketplace.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Custom date ranges</strong>Today, weekly, monthly, quarterly, or any custom window.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Role-based views</strong>Different dashboards for ops, finance, and management teams.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Scheduled reports</strong>Auto-send daily or weekly reports via email.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Inventory ageing</strong>Flag slow-moving and dead stock before it becomes a problem.</div></div>
+            </div></div>
+          </div>
+          <div class="feat-block" id="feat-orders">
+            <div class="feat-block-hdr"><div class="feat-block-ico" style="background:#FFF7ED">📦</div><div><h3>Order Management</h3><p>A single command centre for every order, regardless of which channel it came from.</p></div></div>
+            <div class="feat-block-body"><div class="feat-pts">
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Omnichannel inbox</strong>All orders from Amazon, Flipkart, Shopify and 37 more in one queue.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Smart routing rules</strong>Auto-route orders to the nearest warehouse with sufficient stock.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>SLA monitoring</strong>Real-time countdown timers with alerts before any breach occurs.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Bulk actions</strong>Print labels and update statuses for hundreds of orders at once.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Order timeline</strong>Full audit trail of every status change with timestamps.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Exception handling</strong>Automatic flagging of cancelled, returned, and RTO orders.</div></div>
+            </div></div>
+          </div>
+          <div class="feat-block" id="feat-inventory">
+            <div class="feat-block-hdr"><div class="feat-block-ico" style="background:#EDFAF5">🗃️</div><div><h3>Inventory Management</h3><p>Always know exactly what you have, where it is, and when you need more.</p></div></div>
+            <div class="feat-block-body"><div class="feat-pts">
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Real-time sync</strong>Inventory updates across all channels within seconds of each transaction.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Multi-location</strong>Manage stock across unlimited warehouses, 3PLs, and FCs.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Reorder automation</strong>Set reorder points and get PO drafts generated automatically.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Bundle & kit support</strong>Define kits and combos with proper component deductions.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Serialisation</strong>Track individual units by serial number for high-value items.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Oversell prevention</strong>Automatic channel locks when stock drops below safety levels.</div></div>
+            </div></div>
+          </div>
+          <div class="feat-block" id="feat-warehouse">
+            <div class="feat-block-hdr"><div class="feat-block-ico" style="background:#FFFBEB">🏭</div><div><h3>Warehouse Management</h3><p>Optimised pick-pack-ship workflows that reduce errors and increase throughput.</p></div></div>
+            <div class="feat-block-body"><div class="feat-pts">
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Zone-based picking</strong>Optimised pick paths reduce travel time by up to 40%.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Scan verification</strong>Barcode and QR scan-and-verify eliminates mispicks.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Operator management</strong>Track picks, packs, and throughput per operator per shift.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Courier manifests</strong>Auto-generate manifests for Delhivery, BlueDart, and more.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Slot management</strong>Assign and relocate bin locations with full putaway logic.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Cycle counting</strong>Continuous partial inventory counts without shutting down.</div></div>
+            </div></div>
+          </div>
+          <div class="feat-block" id="feat-ai">
+            <div class="feat-block-hdr"><div class="feat-block-ico" style="background:#F3F0FF">🤖</div><div><h3>AI Insights (Powered by Claude)</h3><p>Conversational commerce intelligence that tells you what to do next.</p></div></div>
+            <div class="feat-block-body"><div class="feat-pts">
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Natural language queries</strong>Ask "Why is Myntra SLA dropping?" and get instant root cause analysis.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Proactive alerts</strong>AI flags stockout risks and SLA trends before they become problems.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Demand forecasting</strong>Predict order volume by SKU and channel for the next 30 days.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Action recommendations</strong>Specific, quantified suggestions — e.g. "Reorder 200 units by Friday."</div></div>
+            </div></div>
+          </div>
+          <div class="feat-block" id="feat-returns">
+            <div class="feat-block-hdr"><div class="feat-block-ico" style="background:#FFF0F0">🔄</div><div><h3>Returns & Exchanges</h3><p>Turn the most painful part of e-commerce into a smooth, automated workflow.</p></div></div>
+            <div class="feat-block-body"><div class="feat-pts">
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Automated QC</strong>Scan returned items with condition grading at receipt.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Instant credit issuance</strong>Trigger refunds or replacements automatically on QC pass.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Return rate analytics</strong>Understand why customers return and which channels have highest RTO.</div></div>
+              <div class="feat-pt"><div class="feat-pt-dot">✓</div><div class="feat-pt-txt"><strong>Re-listing automation</strong>Graded returns automatically re-listed or moved to liquidation.</div></div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section-sm" style="background:var(--off)"><div class="container"><div class="cta-box"><h2>See every feature live.</h2><p>Book a 30-minute demo tailored to your operations.</p><div class="cta-actions"><button class="btn btn-white" onclick="nav('contact')">Book a demo →</button><button class="btn btn-white-outline" onclick="nav('pricing')">View pricing</button></div></div></div></section>
+</div><!-- /features -->
+
+<!-- ══════════════════════════════════════════════
+     PAGE: PRICING
+══════════════════════════════════════════════ -->
+<div id="page-pricing" class="page">
+  <section class="pricing-hero">
+    <div class="container text-center">
+      <div class="sec-tag">Pricing</div>
+      <h1 class="headline">Start free. Scale as you grow.</h1>
+      <p class="subhead">No per-channel fees, no hidden costs. One price for everything your operations team needs.</p>
+      <div class="pricing-toggle">
+        <span class="toggle-lbl on" id="tlbl-annual">Annual</span>
+        <div class="toggle-track" id="billing-toggle" onclick="toggleBilling()"><div class="toggle-thumb"></div></div>
+        <span class="toggle-lbl" id="tlbl-monthly">Monthly</span>
+        <span class="save-pill">Save 20%</span>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="price-tier">Starter</div>
+          <div class="price-amount"><span class="price-num" id="p-starter">₹3,999</span><span class="price-per">/mo</span></div>
+          <p class="price-desc">For growing D2C brands getting started with multi-channel operations.</p>
+          <div class="price-feats"><div class="price-feat">Up to 5,000 orders/month</div><div class="price-feat">3 channel integrations</div><div class="price-feat">1 warehouse</div><div class="price-feat">Basic analytics dashboard</div><div class="price-feat">Email + chat support</div><div class="price-feat na">AI insights</div><div class="price-feat na">Warehouse management</div><div class="price-feat na">API access</div></div>
+          <button class="price-btn" onclick="showLoginModal()">Get started free</button>
+        </div>
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most popular</div>
+          <div class="price-tier">Growth</div>
+          <div class="price-amount"><span class="price-num" id="p-growth">₹11,999</span><span class="price-per">/mo</span></div>
+          <p class="price-desc">For scaling brands with complex multi-channel and multi-warehouse operations.</p>
+          <div class="price-feats"><div class="price-feat">Up to 50,000 orders/month</div><div class="price-feat">Unlimited channel integrations</div><div class="price-feat">3 warehouses + WMS</div><div class="price-feat">Full analytics suite</div><div class="price-feat">AI insights (Claude-powered)</div><div class="price-feat">Returns & QC workflows</div><div class="price-feat">Priority support (4hr SLA)</div><div class="price-feat">REST API access</div></div>
+          <button class="price-btn primary" onclick="showLoginModal()">Start 14-day free trial</button>
+        </div>
+        <div class="pricing-card">
+          <div class="price-tier">Enterprise</div>
+          <div class="price-amount"><span class="price-num" style="font-size:2rem;letter-spacing:-1px">Custom</span></div>
+          <p class="price-desc">For large enterprises with high volumes and custom SLA requirements.</p>
+          <div class="price-feats"><div class="price-feat">Unlimited orders & channels</div><div class="price-feat">Custom integrations & ERP sync</div><div class="price-feat">Unlimited warehouses & 3PLs</div><div class="price-feat">Custom AI models & prompts</div><div class="price-feat">Dedicated account manager</div><div class="price-feat">On-premise deployment option</div><div class="price-feat">Custom SLA & uptime guarantee</div><div class="price-feat">SSO & advanced security</div></div>
+          <button class="price-btn" onclick="nav('contact')">Talk to sales</button>
+        </div>
+      </div>
+      <div class="ent-strip"><div><h3 style="font-size:1.1rem;font-weight:800;margin-bottom:0.3rem">Need a custom plan?</h3><p style="font-size:0.875rem;color:var(--muted)">We work with brands at every scale. Let's talk.</p></div><button class="btn btn-blue btn-sm" onclick="nav('contact')">Contact sales →</button></div>
+      <div class="faq-wrap">
+        <h2 style="font-size:1.75rem;font-weight:800;text-align:center;margin-bottom:2.5rem;letter-spacing:-0.5px">Frequently asked questions</h2>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a free trial?</div><div class="faq-a">Yes. All Growth plan features are available for 14 days with no credit card required. You can import your real orders and inventory to see exactly how Nexus works for your business.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I switch plans later?</div><div class="faq-a">Absolutely. You can upgrade or downgrade at any time. When you upgrade, you get access to the new features immediately and are billed pro-rata.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What happens if I exceed my order limit?</div><div class="faq-a">We'll notify you as you approach your limit. We never block order processing mid-cycle. Excess orders are billed at a small per-order fee until you upgrade.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do you charge per channel integration?</div><div class="faq-a">No. Growth and Enterprise plans include unlimited channel integrations at no extra cost. Your platform cost should never increase just because you add a new sales channel.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How does onboarding work?</div><div class="faq-a">All Growth and Enterprise customers get a dedicated onboarding specialist. We migrate your existing data, set up channel integrations, and train your team. Most customers go live within 2-3 business days.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is my data secure?</div><div class="faq-a">Yes. Nexus is hosted on AWS India (Mumbai region), is SOC 2 Type II certified, and uses AES-256 encryption at rest and TLS 1.3 in transit. Enterprise plans support SSO and audit logs.</div></div>
+      </div>
+    </div>
+  </section>
+</div><!-- /pricing -->
+
+<!-- ══════════════════════════════════════════════
+     PAGE: ABOUT
+══════════════════════════════════════════════ -->
+<div id="page-about" class="page">
+  <section class="about-hero">
+    <div class="container">
+      <div class="sec-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8)">Our story</div>
+      <h1>We're building the operating system<br>for Indian commerce.</h1>
+      <p>Founded in 2021 in Bengaluru, Nexus was born from a frustration — that India's fastest-growing brands were stitching together 12 different tools just to run their operations.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="mission-grid">
+        <div>
+          <div class="sec-tag">Our mission</div>
+          <blockquote>"To make world-class commerce operations accessible to every Indian brand, not just the ones with 50-person ops teams."</blockquote>
+          <p style="font-size:0.975rem;color:var(--muted);line-height:1.8">We started by talking to hundreds of ops managers, warehouse supervisors, and founders. We saw the same pain everywhere — disconnected tools, missed SLAs, oversells, and hours wasted on manual reconciliation.</p>
+          <p style="font-size:0.975rem;color:var(--muted);line-height:1.8;margin-top:1rem">Today, we process over 12 million orders a day for 500+ brands, and we're just getting started.</p>
+        </div>
+        <div>
+          <div class="numbers-grid">
+            <div class="number-cell"><div class="number-val">500+</div><div class="number-lbl">Brands on platform</div></div>
+            <div class="number-cell"><div class="number-val">12M</div><div class="number-lbl">Orders/day</div></div>
+            <div class="number-cell"><div class="number-val">120</div><div class="number-lbl">Team members</div></div>
+            <div class="number-cell"><div class="number-val">₹48Cr</div><div class="number-lbl">Series B raised</div></div>
+          </div>
+          <div style="margin-top:1.5rem;background:var(--accent-light);border-radius:var(--r-xl);padding:2rem;border:1px solid rgba(0,87,255,0.15)">
+            <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:0.75rem">Backed by</div>
+            <div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center"><span style="font-size:1rem;font-weight:800;color:var(--muted)">Accel</span><span style="font-size:1rem;font-weight:800;color:var(--muted)">Peak XV</span><span style="font-size:1rem;font-weight:800;color:var(--muted)">Blume</span><span style="font-size:1rem;font-weight:800;color:var(--muted)">Y Combinator</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider">
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:3rem"><div class="sec-tag">Our values</div><h2 class="headline">How we think and work.</h2></div>
+      <div class="values-grid">
+        <div class="value-card"><div style="font-size:1.75rem;margin-bottom:1rem">⚡</div><h3>Speed is a feature</h3><p>Every second of latency costs our customers money. We obsess over performance at every layer of the stack.</p></div>
+        <div class="value-card"><div style="font-size:1.75rem;margin-bottom:1rem">🏗️</div><h3>Build for operators</h3><p>Our users are warehouse managers and ops leads — not developers. We make complex workflows feel effortless.</p></div>
+        <div class="value-card"><div style="font-size:1.75rem;margin-bottom:1rem">📊</div><h3>Data before opinions</h3><p>Every product decision starts with data. We instrument everything and let numbers guide us, not gut feel.</p></div>
+        <div class="value-card"><div style="font-size:1.75rem;margin-bottom:1rem">🤝</div><h3>Customer success first</h3><p>We're only winning if our customers are winning. Our support teams are empowered to do whatever it takes.</p></div>
+        <div class="value-card"><div style="font-size:1.75rem;margin-bottom:1rem">🇮🇳</div><h3>Built for India</h3><p>We understand COD, RTO, Meesho returns, and Flipkart SLAs. We're India-first, not a US product adapted for India.</p></div>
+        <div class="value-card"><div style="font-size:1.75rem;margin-bottom:1rem">🔬</div><h3>Principled curiosity</h3><p>We use AI not because it's trendy, but because it genuinely makes our customers' operations better.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section" style="background:var(--off)">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:3rem"><div class="sec-tag">Team</div><h2 class="headline">The people behind Nexus.</h2><p class="subhead">Former operators, engineers, and product leaders from Flipkart, Amazon, and Meesho.</p></div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-av" style="background:var(--accent)">AS</div><div class="team-name">Arjun Shah</div><div class="team-title">Co-founder & CEO</div><div class="team-prev">Ex-Flipkart Supply Chain</div></div>
+        <div class="team-card"><div class="team-av" style="background:#6366F1">PM</div><div class="team-name">Priya Menon</div><div class="team-title">Co-founder & CTO</div><div class="team-prev">Ex-Amazon India Engineering</div></div>
+        <div class="team-card"><div class="team-av" style="background:var(--green)">RK</div><div class="team-name">Rohan Kapoor</div><div class="team-title">VP Product</div><div class="team-prev">Ex-Meesho Product</div></div>
+        <div class="team-card"><div class="team-av" style="background:var(--accent2)">SN</div><div class="team-name">Sneha Nair</div><div class="team-title">VP Engineering</div><div class="team-prev">Ex-Swiggy Infra</div></div>
+      </div>
+    </div>
+  </section>
+</div><!-- /about -->
+
+<!-- ══════════════════════════════════════════════
+     PAGE: BLOG
+══════════════════════════════════════════════ -->
+<div id="page-blog" class="page">
+  <section class="blog-hero">
+    <div class="container">
+      <div class="sec-tag">Nexus Blog</div>
+      <h1 class="headline" style="font-size:2.8rem">Commerce insights, guides,<br>and product updates.</h1>
+      <p class="subhead">Practical content for operations leaders, warehouse managers, and D2C founders.</p>
+      <div class="blog-filters">
+        <button class="blog-filter active" onclick="setBlogFilter(this,'all')">All</button>
+        <button class="blog-filter" onclick="setBlogFilter(this,'ops')">Operations</button>
+        <button class="blog-filter" onclick="setBlogFilter(this,'inv')">Inventory</button>
+        <button class="blog-filter" onclick="setBlogFilter(this,'tech')">Technology</button>
+        <button class="blog-filter" onclick="setBlogFilter(this,'prod')">Product updates</button>
+        <button class="blog-filter" onclick="setBlogFilter(this,'ind')">Industry</button>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="blog-featured">
+        <div class="blog-card"><div class="blog-img lg" style="background:linear-gradient(135deg,#EEF3FF,#E0E7FF)">📦</div><div class="blog-body"><div class="blog-cat">Operations</div><h3 style="font-size:1.3rem;letter-spacing:-0.5px">How India's Top 50 D2C Brands Are Cutting Fulfilment Costs by 35%</h3><p>A deep dive into the operational changes that separated the brands that survived the 2023 RTO crisis from those that didn't.</p><div class="blog-meta"><div class="blog-av">AS</div><span>Arjun Shah</span><span>·</span><span>12 min read</span><span>·</span><span>Mar 2025</span></div></div></div>
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+          <div class="blog-card"><div class="blog-body"><div class="blog-cat">Technology</div><h3 class="sm">AI in commerce operations: what actually works vs. what's hype</h3><div class="blog-meta"><div class="blog-av" style="background:#6366F1">PM</div><span>Priya Menon</span><span>·</span><span>8 min read</span></div></div></div>
+          <div class="blog-card"><div class="blog-body"><div class="blog-cat">Product</div><h3 class="sm">Announcing Nexus AI: Claude-powered insights for your operations</h3><div class="blog-meta"><div class="blog-av" style="background:var(--green)">RK</div><span>Rohan Kapoor</span><span>·</span><span>5 min read</span></div></div></div>
+          <div class="blog-card"><div class="blog-body"><div class="blog-cat">Inventory</div><h3 class="sm">The definitive guide to reorder point calculation for Indian D2C brands</h3><div class="blog-meta"><div class="blog-av" style="background:var(--accent2)">SN</div><span>Sneha Nair</span><span>·</span><span>10 min read</span></div></div></div>
+        </div>
+      </div>
+      <hr class="divider" style="margin-bottom:3rem">
+      <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:2rem">Latest articles</h2>
+      <div class="blog-grid">
+        <div class="blog-card"><div class="blog-img" style="background:linear-gradient(135deg,#EDFAF5,#D1FAE5)">🏭</div><div class="blog-body"><div class="blog-cat">Operations</div><h3 class="sm">Zone picking vs. batch picking: which is right for your warehouse?</h3><p>A practical comparison with real throughput numbers from 20 warehouses.</p><div class="blog-meta"><span>7 min read</span><span>·</span><span>Feb 2025</span></div></div></div>
+        <div class="blog-card"><div class="blog-img" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7)">📊</div><div class="blog-body"><div class="blog-cat">Industry</div><h3 class="sm">The state of Indian D2C operations in 2025: our annual survey results</h3><p>Data from 200+ brands on their biggest ops challenges and growth plans.</p><div class="blog-meta"><span>15 min read</span><span>·</span><span>Jan 2025</span></div></div></div>
+        <div class="blog-card"><div class="blog-img" style="background:linear-gradient(135deg,#FEF2F2,#FECACA)">🔄</div><div class="blog-body"><div class="blog-cat">Operations</div><h3 class="sm">Reducing Meesho RTO: a playbook that cut our customers' return rates by 22%</h3><p>Specific, actionable steps that work for Meesho's buyer behaviour.</p><div class="blog-meta"><span>9 min read</span><span>·</span><span>Jan 2025</span></div></div></div>
+        <div class="blog-card"><div class="blog-img" style="background:linear-gradient(135deg,#F3F0FF,#EDE9FE)">🤖</div><div class="blog-body"><div class="blog-cat">Technology</div><h3 class="sm">How we built real-time inventory sync across 40 channels without downtime</h3><p>A technical deep dive into the event-driven architecture behind Nexus.</p><div class="blog-meta"><span>12 min read</span><span>·</span><span>Dec 2024</span></div></div></div>
+        <div class="blog-card"><div class="blog-img" style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE)">📦</div><div class="blog-body"><div class="blog-cat">Operations</div><h3 class="sm">SLA management on Amazon India: the complete 2025 guide</h3><p>Everything ops teams need to know about Amazon's SLA requirements.</p><div class="blog-meta"><span>11 min read</span><span>·</span><span>Dec 2024</span></div></div></div>
+        <div class="blog-card"><div class="blog-img" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7)">📈</div><div class="blog-body"><div class="blog-cat">Industry</div><h3 class="sm">Quick commerce vs. standard: how ops teams are adapting</h3><p>How 10-minute delivery is reshaping fulfilment strategies for D2C brands.</p><div class="blog-meta"><span>6 min read</span><span>·</span><span>Nov 2024</span></div></div></div>
+      </div>
+    </div>
+  </section>
+</div><!-- /blog -->
+
+<!-- ══════════════════════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════════════════════ -->
+<div id="page-contact" class="page">
+  <section class="contact-hero">
+    <div class="container">
+      <div class="sec-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8)">Get in touch</div>
+      <h1 class="headline" style="color:#fff;font-size:clamp(2rem,4vw,3rem)">Let's talk about your operations.</h1>
+      <p>Whether you want a product demo, have a sales question, or need support — we're here.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2>How can we help?</h2>
+          <p>Our team typically responds within 2 business hours. Existing customers can use the in-app chat for urgent support.</p>
+          <div class="contact-channels">
+            <div class="cc"><div class="cc-ico" style="background:var(--accent-light)">💬</div><div><div class="cc-lbl">Sales enquiry</div><div class="cc-val">sales@nexus.com</div></div></div>
+            <div class="cc"><div class="cc-ico" style="background:var(--green-bg)">🛠️</div><div><div class="cc-lbl">Technical support</div><div class="cc-val">support@nexus.com</div></div></div>
+            <div class="cc"><div class="cc-ico" style="background:var(--yellow-bg)">🤝</div><div><div class="cc-lbl">Partnerships</div><div class="cc-val">partners@nexus.com</div></div></div>
+            <div class="cc"><div class="cc-ico" style="background:var(--off)">📞</div><div><div class="cc-lbl">Phone (India)</div><div class="cc-val">1800-103-6282 (toll-free)</div></div></div>
+          </div>
+        </div>
+        <div class="contact-form-card">
+          <h3>Book a demo</h3>
+          <p class="form-sub">Fill in your details and we'll schedule a personalised demo within 24 hours.</p>
+          <div class="form-row">
+            <div class="form-group"><label>First name</label><input class="form-input" id="cf-fname" type="text" placeholder="Arjun"/></div>
+            <div class="form-group"><label>Last name</label><input class="form-input" id="cf-lname" type="text" placeholder="Shah"/></div>
+          </div>
+          <div class="form-group"><label>Work email</label><input class="form-input" id="cf-email" type="email" placeholder="arjun@brand.com"/></div>
+          <div class="form-group"><label>Company</label><input class="form-input" id="cf-company" type="text" placeholder="Your brand name"/></div>
+          <div class="form-row">
+            <div class="form-group"><label>Monthly orders</label>
+              <select class="form-input" id="cf-orders"><option value="">Select range</option><option>Under 1,000</option><option>1,000 – 10,000</option><option>10,000 – 50,000</option><option>50,000 – 200,000</option><option>200,000+</option></select>
+            </div>
+            <div class="form-group"><label>Primary channel</label>
+              <select class="form-input" id="cf-channel"><option value="">Select</option><option>Amazon</option><option>Flipkart</option><option>Shopify / D2C</option><option>Multi-channel</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Biggest ops challenge <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea class="form-input" id="cf-challenge" placeholder="e.g. We're struggling with SLA compliance on Flipkart…"></textarea></div>
+          <button class="form-submit" id="cf-submit" onclick="submitContactForm()">Book my demo →</button>
+        </div>
+      </div>
+      <div class="offices-grid">
+        <div class="office-card"><div class="office-city">🏢 Bengaluru (HQ)</div><div class="office-addr">91 Springboard, Koramangala<br>Bengaluru, Karnataka 560034<br><br>Mon–Fri, 9am–7pm IST</div></div>
+        <div class="office-card"><div class="office-city">🏢 Delhi NCR</div><div class="office-addr">WeWork, DLF Cyber City<br>Gurugram, Haryana 122002<br><br>Mon–Fri, 9am–7pm IST</div></div>
+        <div class="office-card"><div class="office-city">🏢 Mumbai</div><div class="office-addr">WeWork BKC<br>Mumbai, Maharashtra 400051<br><br>Mon–Fri, 9am–7pm IST</div></div>
+      </div>
+    </div>
+  </section>
+</div><!-- /contact -->
+
+<!-- ══════════════════════════════════════════════
+     PAGE: DASHBOARD
+══════════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <aside class="d-sidebar">
+    <div class="d-slogo"><div class="d-mark">N</div><div class="d-name">Nexus<span>.</span></div></div>
+    <div class="d-back-btn" onclick="goHome()">← Back to site</div>
+    <div class="d-nav-sec">Commerce</div>
+    <div class="d-nav-item active" data-nav="overview">
+      <svg class="d-nav-ico" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="d-nav-item" data-nav="orders">
+      <svg class="d-nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V2a1 1 0 012 0v1M9 3V2a1 1 0 012 0v1"/><line x1="4" y1="8" x2="12" y2="8"/></svg>
+      Orders <span class="d-badge" id="d-breach-count">0</span>
+    </div>
+    <div class="d-nav-item" data-nav="inventory">
+      <svg class="d-nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5l6-3 6 3v6l-6 3-6-3V5z"/><path d="M8 2v12M2 5l6 3 6-3"/></svg>
+      Inventory
+    </div>
+    <div class="d-nav-item" data-nav="warehouse">
+      <svg class="d-nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7l7-5 7 5v7H1V7z"/><rect x="6" y="10" width="4" height="4"/></svg>
+      Warehouse
+    </div>
+    <div class="d-nav-sec">Intelligence</div>
+    <div class="d-nav-item" data-nav="analytics">
+      <svg class="d-nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,12 5,7 9,9 15,3"/><polyline points="11,3 15,3 15,7"/></svg>
+      Analytics
+    </div>
+    <div class="d-sidebar-btm">
+      <div class="d-user-row">
+        <div class="d-av" id="d-av">AS</div>
+        <div><div class="d-uname" id="d-uname">Arjun Shah</div><div class="d-urole" id="d-urole">Admin</div></div>
+      </div>
+      <button class="d-logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </aside>
+
+  <div class="d-main">
+    <header class="d-header">
+      <div class="d-htitle" id="d-htitle">Overview</div>
+      <div class="d-search"><span class="d-search-ico">⌕</span><input type="text" id="d-search-input" placeholder="Search orders, SKUs…"/></div>
+      <div class="d-hright">
+        <div class="d-hbtn"><span class="d-notif-dot"></span><span id="d-alert-count">0</span> alerts</div>
+        <div class="d-hbtn">WH-MUM-01 ▾</div>
+        <button class="d-new-btn" onclick="openModal('newOrderModal')">+ New order</button>
+      </div>
+    </header>
+
+    <div class="d-content">
+
+      <!-- ── OVERVIEW TAB ── -->
+      <div class="d-tab active" id="dtab-overview">
+        <div class="d-tabbar">
+          <div class="d-tabpill active" onclick="setTabPill(this)">Today</div>
+          <div class="d-tabpill" onclick="setTabPill(this)">This Week</div>
+          <div class="d-tabpill" onclick="setTabPill(this)">This Month</div>
+        </div>
+
+        <div class="d-ai-panel">
+          <div class="d-ai-hdr"><div class="d-ai-ico">✦</div><div class="d-ai-title">Nexus AI Insights</div><div class="d-ai-status" id="ai-st1">Ready</div></div>
+          <div class="d-ai-body" id="ai-b1">Ask AI to analyse your commerce data — instant insights on sales trends, inventory risks, and fulfilment bottlenecks.</div>
+          <div class="d-ai-chips">
+            <div class="d-ai-chip" data-prompt="Summarise today's key commerce metrics and highlight any risks I should act on immediately.">Summarise today</div>
+            <div class="d-ai-chip" data-prompt="Which inventory SKUs are at risk of stockout in the next 7 days based on current velocity?">Stockout risks</div>
+            <div class="d-ai-chip" data-prompt="Analyse order fulfilment performance. Which channels have the most SLA breaches and what should I do?">SLA analysis</div>
+            <div class="d-ai-chip" data-prompt="What warehouse optimisations would improve our pick-pack throughput the most?">WH optimisation</div>
+          </div>
+        </div>
+
+        <div class="d-metrics" id="d-kpi-row">
+          <div class="d-mcard"><div class="d-mlabel">Total GMV</div><div class="d-mval" id="kpi-gmv">Loading…</div><div class="d-mdelta d-dup" id="kpi-gmv-d"></div></div>
+          <div class="d-mcard"><div class="d-mlabel">Orders</div><div class="d-mval" id="kpi-orders">—</div><div class="d-mdelta d-dup" id="kpi-orders-d"></div></div>
+          <div class="d-mcard"><div class="d-mlabel">SLA Hit Rate</div><div class="d-mval" id="kpi-sla">—</div><div class="d-mdelta" id="kpi-sla-d"></div></div>
+          <div class="d-mcard"><div class="d-mlabel">SLA Breaches</div><div class="d-mval" id="kpi-breaches">—</div><div class="d-mdelta d-ddown"></div></div>
+        </div>
+
+        <div class="d-panel-row">
+          <div class="d-panel">
+            <div class="d-phdr"><div class="d-ptitle">Hourly order volume</div><div class="d-paction">Full report →</div></div>
+            <div class="d-barchart" id="d-hourly-chart"></div>
+            <div style="display:flex;justify-content:space-between;margin-top:5px">
+              <span style="font-size:0.62rem;color:var(--dm)">6am</span><span style="font-size:0.62rem;color:var(--dm)">12pm</span><span style="font-size:0.62rem;color:var(--dm)">6pm</span><span style="font-size:0.62rem;color:var(--dm)">Now</span>
+            </div>
+          </div>
+          <div class="d-panel">
+            <div class="d-phdr"><div class="d-ptitle">Top SKUs today</div><div class="d-paction">View all →</div></div>
+            <div id="d-sku-bars"></div>
+          </div>
+        </div>
+
+        <div class="d-panel">
+          <div class="d-phdr"><div class="d-ptitle">Channel breakdown</div><div class="d-paction">View all →</div></div>
+          <table class="d-tbl" id="d-channel-tbl">
+            <thead><tr><th>Channel</th><th>Orders</th><th>GMV</th><th>SLA%</th><th>Return %</th><th>Status</th></tr></thead>
+            <tbody id="d-channel-body"><tr><td colspan="6" style="text-align:center;color:var(--dm);padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ORDERS TAB ── -->
+      <div class="d-tab" id="dtab-orders">
+        <div class="d-fbar">
+          <select class="d-fsel" id="ord-status-filter" onchange="filterOrders()"><option value="">All statuses</option><option value="shipped">Shipped</option><option value="packed">Packed</option><option value="pending">Pending</option><option value="breach">SLA Breach</option><option value="cancelled">Cancelled</option><option value="delivered">Delivered</option></select>
+          <select class="d-fsel" id="ord-channel-filter" onchange="filterOrders()"><option value="">All channels</option><option>Amazon</option><option>Flipkart</option><option>Shopify</option><option>Myntra</option><option>Meesho</option></select>
+          <div class="d-fcnt" id="d-ord-cnt">Loading…</div>
+          <button class="d-btn-ghost" onclick="exportOrders()">↓ Export CSV</button>
+          <button class="d-btn-sm" onclick="openModal('newOrderModal')">+ New order</button>
+        </div>
+        <div class="d-panel" style="padding:0;overflow:hidden">
+          <table class="d-tbl">
+            <thead><tr><th style="padding-left:1.2rem">Order ID</th><th>Customer</th><th>Channel</th><th>Items</th><th>Value</th><th>Status</th><th>SLA</th><th></th></tr></thead>
+            <tbody id="d-orders-body"><tr><td colspan="8" style="text-align:center;color:var(--dm);padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── INVENTORY TAB ── -->
+      <div class="d-tab" id="dtab-inventory">
+        <div class="d-fbar">
+          <select class="d-fsel" id="inv-health-filter" onchange="filterInventory()"><option value="">All health</option><option value="healthy">Healthy</option><option value="low">Low stock</option><option value="out">Out of stock</option></select>
+          <div class="d-fcnt" id="d-inv-cnt">Loading…</div>
+          <button class="d-btn-sm">+ Add SKU</button>
+        </div>
+        <div class="d-panel" style="padding:0;overflow:hidden">
+          <table class="d-tbl">
+            <thead><tr><th style="padding-left:1.2rem">SKU</th><th>Product</th><th>Warehouse</th><th>On hand</th><th>Reserved</th><th>Available</th><th>Reorder at</th><th>Health</th></tr></thead>
+            <tbody id="d-inv-body"><tr><td colspan="8" style="text-align:center;color:var(--dm);padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── WAREHOUSE TAB ── -->
+      <div class="d-tab" id="dtab-warehouse">
+        <div class="d-metrics" id="d-wh-metrics">
+          <div class="d-mcard"><div class="d-mlabel">Pending picks</div><div class="d-mval" id="wh-pending">342</div><div class="d-mdelta d-ddown">▲ 18 <span class="d-dlbl">last hour</span></div></div>
+          <div class="d-mcard"><div class="d-mlabel">Packed today</div><div class="d-mval">1,204</div><div class="d-mdelta d-dup">▲ 6.3%</div></div>
+          <div class="d-mcard"><div class="d-mlabel">Dispatched</div><div class="d-mval">987</div><div class="d-mdelta d-dup">On track</div></div>
+          <div class="d-mcard"><div class="d-mlabel">Accuracy</div><div class="d-mval">99.4%</div><div class="d-mdelta d-dup">▲ 0.2%</div></div>
+        </div>
+        <div class="d-panel-row">
+          <div class="d-panel">
+            <div class="d-phdr"><div class="d-ptitle">Zone operators</div><div class="d-paction">Manage →</div></div>
+            <table class="d-tbl">
+              <thead><tr><th>Zone</th><th>Operator</th><th>Picks</th><th>Progress</th><th>Status</th></tr></thead>
+              <tbody id="d-wh-ops-body"><tr><td colspan="5" style="text-align:center;color:var(--dm);padding:1rem">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="d-panel">
+            <div class="d-phdr"><div class="d-ptitle">Courier manifest</div><div class="d-paction">Generate →</div></div>
+            <table class="d-tbl">
+              <thead><tr><th>Courier</th><th>Bags</th><th>Status</th></tr></thead>
+              <tbody id="d-manifests-body"><tr><td colspan="3" style="text-align:center;color:var(--dm);padding:1rem">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANALYTICS TAB ── -->
+      <div class="d-tab" id="dtab-analytics">
+        <div class="d-ai-panel">
+          <div class="d-ai-hdr"><div class="d-ai-ico">✦</div><div class="d-ai-title">AI Analytics Assistant</div><div class="d-ai-status" id="ai-st2">Ready</div></div>
+          <div class="d-ai-body" id="ai-b2">Ask me anything about your business performance. I can identify trends, flag anomalies, and suggest actions.</div>
+          <div class="d-ai-chips">
+            <div class="d-ai-chip" data-prompt2="Which product categories are growing fastest this month? Give specific percentage changes.">Growth trends</div>
+            <div class="d-ai-chip" data-prompt2="Identify the top 3 operational inefficiencies in our fulfilment process and suggest fixes.">Find inefficiencies</div>
+            <div class="d-ai-chip" data-prompt2="What's causing our Myntra SLA breach rate being the worst? Root cause and action plan.">Myntra SLA issue</div>
+          </div>
+        </div>
+        <div class="d-metrics">
+          <div class="d-mcard"><div class="d-mlabel">7-day GMV</div><div class="d-mval" id="a-gmv7">—</div><div class="d-mdelta d-dup" id="a-gmv7-d"></div></div>
+          <div class="d-mcard"><div class="d-mlabel">Avg order value</div><div class="d-mval" id="a-aov">—</div><div class="d-mdelta d-dup"></div></div>
+          <div class="d-mcard"><div class="d-mlabel">Top channel</div><div class="d-mval" id="a-top-ch">—</div><div class="d-mdelta d-dup"></div></div>
+          <div class="d-mcard"><div class="d-mlabel">Top SKU</div><div class="d-mval" id="a-top-sku" style="font-size:1rem;padding-top:0.25rem">—</div></div>
+        </div>
+        <div class="d-panel">
+          <div class="d-phdr"><div class="d-ptitle">Channel performance (7 days)</div><div class="d-paction">Export →</div></div>
+          <table class="d-tbl">
+            <thead><tr><th>Channel</th><th>Orders</th><th>GMV</th><th>SLA%</th><th>Avg fulfilment (hrs)</th><th>Breaches</th></tr></thead>
+            <tbody id="d-analytics-body"><tr><td colspan="6" style="text-align:center;color:var(--dm);padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /d-content -->
+  </div><!-- /d-main -->
+</div><!-- /dashboard -->
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<footer class="footer" id="main-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem"><div class="nav-mark">N</div><div class="nav-name" style="color:#fff">Nexus<span>.</span></div></div>
+        <p>The unified commerce OS for India's fastest-growing brands.</p>
+      </div>
+      <div class="footer-col"><h4>Platform</h4><ul><li><a onclick="nav('features')">Analytics</a></li><li><a onclick="nav('features')">Order Management</a></li><li><a onclick="nav('features')">Inventory</a></li><li><a onclick="nav('features')">Warehouse WMS</a></li><li><a onclick="nav('features')">AI Insights</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a onclick="nav('about')">About us</a></li><li><a onclick="nav('blog')">Blog</a></li><li><a onclick="nav('contact')">Careers</a></li><li><a onclick="nav('contact')">Press kit</a></li></ul></div>
+      <div class="footer-col"><h4>Support</h4><ul><li><a onclick="nav('contact')">Documentation</a></li><li><a onclick="nav('contact')">API reference</a></li><li><a onclick="nav('contact')">Status page</a></li><li><a onclick="nav('pricing')">Pricing</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">© 2025 Nexus Commerce Technologies Pvt. Ltd. · All rights reserved</div>
+      <div class="footer-socials"><div class="social-btn">𝕏</div><div class="social-btn">in</div><div class="social-btn">▶</div></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// CONFIG — change this to your backend URL
+// ══════════════════════════════════════════════════════════════════════════════
+const API_BASE = 'http://localhost:4000/api';
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let authToken    = localStorage.getItem('nexus_token') || null;
+let currentUser  = JSON.parse(localStorage.getItem('nexus_user') || 'null');
+let allOrders    = [];
+let allInventory = [];
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'default', duration = 3500) {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item${type !== 'default' ? ' ' + type : ''}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(8px)'; el.style.transition = 'all 0.3s'; setTimeout(() => el.remove(), 300); }, duration);
+}
+
+// ── API HELPER ────────────────────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}), ...opts.headers };
+  const res = await fetch(API_BASE + path, { ...opts, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || 'Request failed'), { status: res.status, data });
+  return data;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════════
+const LANDING_PAGES = ['home','features','pricing','about','blog','contact'];
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-links li a').forEach(a => a.classList.remove('active'));
+  const link = document.getElementById('nl-' + page);
+  if (link) link.classList.add('active');
+  const footer = document.getElementById('main-footer');
+  const mainNav = document.getElementById('main-nav');
+  if (page === 'dashboard') {
+    footer.style.display = 'none';
+    mainNav.style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  } else {
+    footer.style.display = '';
+    mainNav.style.display = '';
+    document.body.style.overflow = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  return false;
+}
+
+function goHome() {
+  nav('home');
+}
+
+// ── NAV SCROLL ────────────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════════════════════
+function showLoginModal() { openModal('loginModal'); }
+
+function fillCreds(role) {
+  const map = { admin: ['admin@nexus.com', 'password123'], manager: ['manager@nexus.com', 'password123'], operator: ['operator@nexus.com', 'password123'] };
+  document.getElementById('li-email').value = map[role][0];
+  document.getElementById('li-pass').value  = map[role][1];
+}
+
+async function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const errEl = document.getElementById('login-err');
+  errEl.style.display = 'none';
+  try {
+    const data = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password: pass }) });
+    authToken   = data.token;
+    currentUser = data.user;
+    localStorage.setItem('nexus_token', authToken);
+    localStorage.setItem('nexus_user',  JSON.stringify(currentUser));
+    closeModal('loginModal');
+    updateDashboardUser();
+    nav('dashboard');
+    loadDashboard();
+    toast(`Welcome back, ${currentUser.name.split(' ')[0]}!`, 'success');
+  } catch (err) {
+    errEl.style.display = 'block';
+  }
+}
+
+function doLogout() {
+  authToken = null; currentUser = null;
+  localStorage.removeItem('nexus_token');
+  localStorage.removeItem('nexus_user');
+  nav('home');
+  toast('Signed out successfully.');
+}
+
+function updateDashboardUser() {
+  if (!currentUser) return;
+  const initials = currentUser.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('d-av').textContent    = initials;
+  document.getElementById('d-uname').textContent = currentUser.name;
+  document.getElementById('d-urole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+}
+
+// Auto-restore session
+if (authToken && currentUser) updateDashboardUser();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SPARKLINE (hero)
+// ══════════════════════════════════════════════════════════════════════════════
+const sparkVals = [42,58,75,90,68,110,132,148,122,165,142,188];
+const maxSpark  = Math.max(...sparkVals);
+const sparkEl   = document.getElementById('sparkline');
+sparkVals.forEach((v, i) => {
+  const b = document.createElement('div');
+  b.className = 'spark-bar';
+  const blues = ['#C7D7FF','#C7D7FF','#C7D7FF','#A5C0FF','#A5C0FF','#83A8FF','#83A8FF','#5B8FFF','#5B8FFF','#2E6FFF','#2E6FFF','#0057FF'];
+  b.style.cssText = `height:${Math.round((v/maxSpark)*100)}%;background:${blues[i]};border-radius:3px 3px 0 0;flex:1;`;
+  sparkEl.appendChild(b);
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BILLING TOGGLE
+// ══════════════════════════════════════════════════════════════════════════════
+let monthly = false;
+const billingPrices = { annual: { starter:'₹3,999', growth:'₹11,999' }, monthly: { starter:'₹4,999', growth:'₹14,999' } };
+function toggleBilling() {
+  monthly = !monthly;
+  document.getElementById('billing-toggle').classList.toggle('monthly', monthly);
+  document.getElementById('p-starter').textContent = monthly ? billingPrices.monthly.starter : billingPrices.annual.starter;
+  document.getElementById('p-growth').textContent  = monthly ? billingPrices.monthly.growth  : billingPrices.annual.growth;
+  document.getElementById('tlbl-annual').classList.toggle('on', !monthly);
+  document.getElementById('tlbl-monthly').classList.toggle('on', monthly);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FAQ
+// ══════════════════════════════════════════════════════════════════════════════
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURES SIDEBAR NAV
+// ══════════════════════════════════════════════════════════════════════════════
+function activeFeatNav(el, targetId) {
+  document.querySelectorAll('.feat-nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BLOG FILTER
+// ══════════════════════════════════════════════════════════════════════════════
+function setBlogFilter(el, cat) {
+  document.querySelectorAll('.blog-filter').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CONTACT FORM
+// ══════════════════════════════════════════════════════════════════════════════
+function submitContactForm() {
+  const email = document.getElementById('cf-email').value.trim();
+  if (!email) { toast('Please enter your work email.', 'error'); return; }
+  const btn = document.getElementById('cf-submit');
+  btn.textContent = '✓ Request sent! We\'ll be in touch within 24 hours.';
+  btn.style.background = 'var(--green)';
+  btn.disabled = true;
+  toast('Demo request submitted! We\'ll reach out within 24 hours.', 'success');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD NAV
+// ══════════════════════════════════════════════════════════════════════════════
+const dNavTitles = { overview:'Overview', orders:'Orders', inventory:'Inventory', warehouse:'Warehouse', analytics:'Analytics' };
+document.querySelectorAll('[data-nav]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('[data-nav]').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    const t = el.dataset.nav;
+    document.querySelectorAll('.d-tab').forEach(c => c.classList.remove('active'));
+    document.getElementById('dtab-' + t).classList.add('active');
+    document.getElementById('d-htitle').textContent = dNavTitles[t];
+    if (t === 'analytics') loadAnalytics();
+    if (t === 'warehouse')  loadWarehouse();
+  });
+});
+
+document.querySelectorAll('.d-tabpill').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.d-tabpill').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+
+function setTabPill(el) {
+  document.querySelectorAll('.d-tabpill').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD LOAD
+// ══════════════════════════════════════════════════════════════════════════════
+async function loadDashboard() {
+  await Promise.all([loadKPIs(), loadOrders(), loadInventory()]);
+  renderCharts();
+}
+
+// KPIs
+async function loadKPIs() {
+  try {
+    const data = await apiFetch('/analytics/overview?period=today');
+    const k = data.kpis;
+
+    document.getElementById('kpi-gmv').textContent    = `₹${(+k.gmv/100000).toFixed(1)}L`;
+    document.getElementById('kpi-orders').textContent = Number(k.orders).toLocaleString();
+    document.getElementById('kpi-sla').textContent    = k.sla_hit_rate ? `${k.sla_hit_rate}%` : 'N/A';
+    document.getElementById('kpi-breaches').textContent = k.sla_breaches;
+
+    if (k.gmv_delta_pct !== null) {
+      const dEl = document.getElementById('kpi-gmv-d');
+      dEl.className = `d-mdelta ${k.gmv_delta_pct >= 0 ? 'd-dup' : 'd-ddown'}`;
+      dEl.innerHTML = `${k.gmv_delta_pct >= 0 ? '▲' : '▼'} ${Math.abs(k.gmv_delta_pct)}% <span class="d-dlbl">vs yesterday</span>`;
+    }
+    if (k.order_delta_pct !== null) {
+      const dEl = document.getElementById('kpi-orders-d');
+      dEl.className = `d-mdelta ${k.order_delta_pct >= 0 ? 'd-dup' : 'd-ddown'}`;
+      dEl.innerHTML = `${k.order_delta_pct >= 0 ? '▲' : '▼'} ${Math.abs(k.order_delta_pct)}% <span class="d-dlbl">vs yesterday</span>`;
+    }
+
+    const breachCount = parseInt(k.sla_breaches) || 0;
+    document.getElementById('d-breach-count').textContent = breachCount;
+    document.getElementById('d-alert-count').textContent  = breachCount;
+
+    // Channel breakdown
+    const tbody = document.getElementById('d-channel-body');
+    const slaMap = { h: '#3DD68C', m: '#F7A94F', l: '#F76E6E' };
+    tbody.innerHTML = data.channelBreakdown.map(ch => {
+      const sla = parseFloat(ch.sla_pct);
+      const slaColor = sla >= 95 ? slaMap.h : sla >= 90 ? slaMap.m : slaMap.l;
+      const health = sla >= 95 ? '<span class="dpill dp-g">Healthy</span>' : sla >= 90 ? '<span class="dpill dp-a">Watch</span>' : '<span class="dpill dp-r">Action</span>';
+      return `<tr>
+        <td><span class="d-chbadge">${ch.channel}</span></td>
+        <td>${Number(ch.orders).toLocaleString()}</td>
+        <td>₹${(+ch.gmv/100000).toFixed(1)}L</td>
+        <td style="color:${slaColor}">${ch.sla_pct ?? 'N/A'}%</td>
+        <td>${ch.return_rate ?? '0'}%</td>
+        <td>${health}</td>
+      </tr>`;
+    }).join('');
+
+    // Hourly chart
+    renderHourlyChart(data.hourlyTrend);
+  } catch (err) {
+    console.error('KPI load failed:', err.message);
+    toast('Could not load KPIs — is the backend running?', 'error');
+    document.getElementById('kpi-gmv').textContent = 'Error';
+  }
+}
+
+function renderHourlyChart(hourly) {
+  const chartEl = document.getElementById('d-hourly-chart');
+  if (!chartEl || !hourly) return;
+  chartEl.innerHTML = '';
+  if (!hourly.length) { chartEl.innerHTML = '<div style="color:var(--dm);font-size:0.8rem">No hourly data yet</div>'; return; }
+  const maxV = Math.max(...hourly.map(h => parseInt(h.orders)));
+  hourly.forEach((h, i) => {
+    const b = document.createElement('div');
+    b.className = 'd-bbar';
+    const pct = maxV > 0 ? Math.round((parseInt(h.orders)/maxV)*100) : 0;
+    b.style.cssText = `height:${pct}%;background:${i === hourly.length-1 ? 'var(--da)' : 'var(--da2)'};opacity:${i === hourly.length-1 ? 1 : 0.5};`;
+    chartEl.appendChild(b);
+  });
+}
+
+function renderCharts() {
+  // fallback sparkline bars if hourly data is empty
+  const chartEl = document.getElementById('d-hourly-chart');
+  if (chartEl && !chartEl.children.length) {
+    const fallback = [38,52,81,110,95,132,148,161,175,155,188,164];
+    const maxV = Math.max(...fallback);
+    fallback.forEach((v, i) => {
+      const b = document.createElement('div');
+      b.className = 'd-bbar';
+      b.style.cssText = `height:${Math.round((v/maxV)*100)}%;background:${i>=9?'var(--da)':'var(--da2)'};opacity:${i===fallback.length-1?1:0.5};`;
+      chartEl.appendChild(b);
+    });
+  }
+  // SKU bars
+  const skuEl = document.getElementById('d-sku-bars');
+  if (skuEl && !skuEl.innerHTML) {
+    const skus = [{n:'SHOE-BLK-42',c:198,col:'var(--da2)'},{n:'TEE-WHT-L',c:145,col:'var(--dg)'},{n:'JEANS-IND-32',c:112,col:'var(--dp)'},{n:'CAP-BLU-OS',c:89,col:'var(--do)'},{n:'SNEAKER-WHT-40',c:74,col:'var(--da)'}];
+    skuEl.innerHTML = skus.map(s => `
+      <div class="d-sku-row">
+        <div class="d-sku-name">${s.n}</div>
+        <div class="d-sku-track"><div class="d-sku-fill" style="width:${Math.round((s.c/198)*100)}%;background:${s.col}"></div></div>
+        <div class="d-sku-cnt">${s.c}</div>
+      </div>`).join('');
+  }
+}
+
+// ── ORDERS ────────────────────────────────────────────────────────────────────
+async function loadOrders() {
+  try {
+    const status  = document.getElementById('ord-status-filter')?.value || '';
+    const channel = document.getElementById('ord-channel-filter')?.value || '';
+    const q       = document.getElementById('d-search-input')?.value?.trim() || '';
+    const params  = new URLSearchParams({ limit: 50, ...(status&&{status}), ...(channel&&{channel}), ...(q&&{search:q}) });
+    const data    = await apiFetch(`/orders?${params}`);
+    allOrders     = data.data;
+    renderOrdersTable(allOrders, data.pagination?.total || allOrders.length);
+  } catch (err) {
+    console.error('Orders load failed:', err.message);
+    document.getElementById('d-orders-body').innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--dr);padding:2rem">Failed to load orders. Is the backend running?</td></tr>`;
+  }
+}
+
+const sMap = { shipped:'dp-g', packed:'dp-b', pending:'dp-a', breach:'dp-r', cancelled:'dp-p', delivered:'dp-g', returned:'dp-p', rto:'dp-r' };
+const sLbl = { shipped:'Shipped', packed:'Packed', pending:'Pending', breach:'SLA Breach', cancelled:'Cancelled', delivered:'Delivered', returned:'Returned', rto:'RTO' };
+
+function renderOrdersTable(orders, total) {
+  const body = document.getElementById('d-orders-body');
+  if (!body) return;
+  document.getElementById('d-ord-cnt').textContent = `Showing ${orders.length} of ${total} orders`;
+  if (!orders.length) { body.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--dm);padding:2rem">No orders match the current filter</td></tr>'; return; }
+  body.innerHTML = orders.map(o => {
+    const sla   = o.sla_deadline ? new Date(o.sla_deadline) : null;
+    const now   = new Date();
+    const diff  = sla ? Math.round((sla - now) / 3600000) : null;
+    const slaStr = o.sla_breached ? 'Overdue' : diff !== null ? (diff > 0 ? `${diff}h left` : 'Due soon') : '—';
+    const slaColor = o.sla_breached ? 'var(--dr)' : diff !== null && diff < 2 ? 'var(--do)' : 'var(--dt)';
+    const val = `₹${Number(o.total).toLocaleString('en-IN')}`;
+    return `<tr onclick="openOrderDetail('${o.id}')">
+      <td style="font-family:monospace;padding-left:1.2rem;font-size:0.75rem">#${o.order_number}</td>
+      <td>${o.customer_name}</td>
+      <td><span class="d-chbadge">${o.channel}</span></td>
+      <td>${o.item_count}</td>
+      <td>${val}</td>
+      <td><span class="dpill ${sMap[o.status]||'dp-a'}">${sLbl[o.status]||o.status}</span></td>
+      <td style="color:${slaColor}">${slaStr}</td>
+      <td><span style="color:var(--da2);font-size:0.75rem;font-weight:600">View →</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterOrders() { loadOrders(); }
+
+async function openOrderDetail(orderId) {
+  try {
+    const o = await apiFetch(`/orders/${orderId}`);
+    document.getElementById('mod-order-id').textContent = `Order #${o.order_number}`;
+    document.getElementById('mod-cust').textContent = o.customer_name;
+    document.getElementById('mod-chan').textContent = o.channel;
+    document.getElementById('mod-val').textContent  = `₹${Number(o.total).toLocaleString('en-IN')}`;
+    document.getElementById('mod-stat').innerHTML   = `<span class="dpill ${sMap[o.status]||'dp-a'}">${sLbl[o.status]||o.status}</span>`;
+    document.getElementById('mod-sla').textContent  = o.sla_deadline ? new Date(o.sla_deadline).toLocaleString('en-IN') : '—';
+    document.getElementById('mod-awb').textContent  = o.awb_number || '—';
+    const dotColors = { order_received:'var(--dm)', processing_started:'var(--da2)', packed:'var(--da2)', shipped:'var(--dg)', delivered:'var(--dg)', sla_breach:'var(--dr)', cancelled:'var(--dr)' };
+    document.getElementById('mod-timeline').innerHTML = (o.events||[]).map(ev => `
+      <div class="tl-item">
+        <div class="tl-dot" style="background:${dotColors[ev.event_type]||'var(--dm)'}"></div>
+        <div class="tl-txt"><strong>${ev.description}</strong> · ${new Date(ev.created_at).toLocaleString('en-IN')}</div>
+      </div>`).join('');
+    const nextActs = { shipped:'Download label', packed:'Mark as shipped', pending:'Mark as packed', breach:'Escalate', cancelled:'Reorder' };
+    document.getElementById('mod-action-btn').textContent = nextActs[o.status] || 'Update';
+    openModal('orderModal');
+  } catch (err) {
+    toast('Could not load order details.', 'error');
+  }
+}
+
+async function submitNewOrder() {
+  const cust = document.getElementById('no-cust').value.trim();
+  const chan = document.getElementById('no-chan').value;
+  const sku  = document.getElementById('no-sku').value.trim();
+  const qty  = parseInt(document.getElementById('no-qty').value) || 1;
+  if (!cust || !sku) { toast('Customer name and SKU are required.', 'error'); return; }
+  try {
+    await apiFetch('/orders', {
+      method: 'POST',
+      body: JSON.stringify({ channel: chan, customer_name: cust, items: [{ sku_id: sku, quantity: qty }] })
+    });
+    closeModal('newOrderModal');
+    toast(`Order created successfully!`, 'success');
+    loadOrders();
+  } catch (err) {
+    toast(err.message || 'Failed to create order.', 'error');
+  }
+}
+
+// Export CSV
+function exportOrders() {
+  if (!allOrders.length) { toast('No orders to export.'); return; }
+  const rows = [['Order ID','Customer','Channel','Value','Status','SLA Deadline'], ...allOrders.map(o => [o.order_number, o.customer_name, o.channel, o.total, o.status, o.sla_deadline||''])];
+  const csv  = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a    = document.createElement('a');
+  a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `nexus_orders_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  toast('Orders exported to CSV!', 'success');
+}
+
+// ── INVENTORY ─────────────────────────────────────────────────────────────────
+async function loadInventory() {
+  try {
+    const health = document.getElementById('inv-health-filter')?.value || '';
+    const q      = document.getElementById('d-search-input')?.value?.trim() || '';
+    const params = new URLSearchParams({ limit: 50, ...(health&&{health}), ...(q&&{search:q}) });
+    const data   = await apiFetch(`/inventory?${params}`);
+    allInventory = data.data;
+    renderInventoryTable(allInventory, data.pagination?.total || allInventory.length);
+  } catch (err) {
+    document.getElementById('d-inv-body').innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--dr);padding:2rem">Failed to load inventory.</td></tr>`;
+  }
+}
+
+function renderInventoryTable(items, total) {
+  const body = document.getElementById('d-inv-body');
+  if (!body) return;
+  document.getElementById('d-inv-cnt').textContent = `Showing ${items.length} of ${total} SKUs`;
+  const hMap = { healthy:'dp-g', low:'dp-a', out:'dp-r' };
+  const hLbl = { healthy:'Healthy', low:'Low stock', out:'Out of stock' };
+  body.innerHTML = items.map(s => `<tr>
+    <td style="font-family:monospace;padding-left:1.2rem;font-size:0.75rem">${s.sku_code}</td>
+    <td>${s.product_name}</td>
+    <td style="color:var(--dm)">${s.wh_code}</td>
+    <td>${s.quantity}</td>
+    <td>${s.reserved}</td>
+    <td style="font-weight:600">${s.available}</td>
+    <td style="color:var(--dm)">${s.reorder_level}</td>
+    <td><span class="dpill ${hMap[s.health]}">${hLbl[s.health]}</span></td>
+  </tr>`).join('');
+}
+
+function filterInventory() { loadInventory(); }
+
+// ── WAREHOUSE ─────────────────────────────────────────────────────────────────
+async function loadWarehouse() {
+  try {
+    const data = await apiFetch('/warehouses/WH-MUM-01');
+
+    // Operators
+    const ops = data.operators || [];
+    const statusPillMap = { active:'dp-g', packing:'dp-b', break:'dp-a', offline:'dp-r' };
+    document.getElementById('d-wh-ops-body').innerHTML = ops.map(op => {
+      const pct = Math.min(100, Math.round((op.picks_today / 200) * 100));
+      return `<tr>
+        <td>${op.zone_code || '—'}</td>
+        <td>${op.name}</td>
+        <td>${op.picks_today}</td>
+        <td><div class="d-prog"><div class="d-prog-fill" style="width:${pct}%;background:var(--dg)"></div></div></td>
+        <td><span class="dpill ${statusPillMap[op.status]||'dp-a'}">${op.status}</span></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--dm);padding:1rem">No operators found</td></tr>';
+
+    // Manifests
+    const manifests = data.manifests || [];
+    const mPillMap  = { ready:'dp-g', scanning:'dp-b', pending:'dp-a', dispatched:'dp-g' };
+    document.getElementById('d-manifests-body').innerHTML = manifests.map(m => `<tr>
+      <td>${m.courier_name}</td>
+      <td>${m.bag_count}</td>
+      <td><span class="dpill ${mPillMap[m.status]||'dp-a'}">${m.status}</span></td>
+    </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--dm);padding:1rem">No manifests today</td></tr>';
+
+    document.getElementById('wh-pending').textContent = data.pendingOrders || 0;
+  } catch (err) {
+    console.error('Warehouse load failed:', err.message);
+  }
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────────────
+async function loadAnalytics() {
+  try {
+    const [week, ful, skus] = await Promise.all([
+      apiFetch('/analytics/overview?period=week'),
+      apiFetch('/analytics/fulfilment'),
+      apiFetch('/analytics/top-skus?period=week&limit=1'),
+    ]);
+
+    const k = week.kpis;
+    document.getElementById('a-gmv7').textContent   = `₹${(+k.gmv/10000000).toFixed(1)}Cr`;
+    document.getElementById('a-aov').textContent    = `₹${Math.round(+k.aov).toLocaleString('en-IN')}`;
+    document.getElementById('a-top-ch').textContent = week.channelBreakdown[0]?.channel || '—';
+    document.getElementById('a-top-sku').textContent= skus.data[0]?.sku_code || '—';
+
+    if (k.gmv_delta_pct !== null) {
+      const dEl = document.getElementById('a-gmv7-d');
+      dEl.className = `d-mdelta ${k.gmv_delta_pct >= 0 ? 'd-dup' : 'd-ddown'}`;
+      dEl.textContent = `${k.gmv_delta_pct >= 0 ? '▲' : '▼'} ${Math.abs(k.gmv_delta_pct)}%`;
+    }
+
+    document.getElementById('d-analytics-body').innerHTML = ful.data.map(ch => `<tr>
+      <td><span class="d-chbadge">${ch.channel}</span></td>
+      <td>${Number(ch.total).toLocaleString()}</td>
+      <td>—</td>
+      <td style="color:${ch.breached > 0 ? 'var(--dr)' : 'var(--dg)'}">—</td>
+      <td>${ch.avg_hours || '—'}h</td>
+      <td style="color:${ch.breached > 0 ? 'var(--dr)' : 'var(--dg)'}">${ch.breached}</td>
+    </tr>`).join('');
+  } catch (err) {
+    console.error('Analytics load failed:', err.message);
+  }
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────────
+async function callAI(prompt, bodyId, statusId) {
+  const bodyEl = document.getElementById(bodyId);
+  const statEl = document.getElementById(statusId);
+  bodyEl.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+  statEl.textContent = 'Thinking…';
+  try {
+    const data = await apiFetch('/ai/insights', { method: 'POST', body: JSON.stringify({ prompt }) });
+    bodyEl.textContent = data.response;
+    statEl.textContent = 'Done';
+    setTimeout(() => statEl.textContent = 'Ready', 3000);
+  } catch (err) {
+    bodyEl.textContent = 'AI service unavailable. Check backend connection.';
+    statEl.textContent = 'Error';
+  }
+}
+
+document.querySelectorAll('.d-ai-chip[data-prompt]').forEach(c => {
+  c.addEventListener('click', () => callAI(c.dataset.prompt, 'ai-b1', 'ai-st1'));
+});
+document.querySelectorAll('.d-ai-chip[data-prompt2]').forEach(c => {
+  c.addEventListener('click', () => callAI(c.dataset.prompt2, 'ai-b2', 'ai-st2'));
+});
+
+// ── GLOBAL SEARCH ─────────────────────────────────────────────────────────────
+let searchTimer;
+document.getElementById('d-search-input').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { loadOrders(); loadInventory(); }, 350);
+});
+
+// ── AUTO LOGIN IF TOKEN EXISTS ────────────────────────────────────────────────
+if (authToken && currentUser && window.location.hash === '#dashboard') {
+  nav('dashboard');
+  loadDashboard();
+}
+</script>
+</body>
+</html>
